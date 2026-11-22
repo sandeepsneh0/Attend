@@ -1,0 +1,2653 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AttendMate — NSMCH Bihta MBBS Phase-III (Part-2) Batch 2023</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .tab-btn.active {
+      background-color: rgb(79 70 229);
+      color: #ffffff;
+      box-shadow: 0 1px 3px rgba(79, 70, 229, 0.35);
+    }
+    .dark .tab-btn.active {
+      background-color: rgb(99 102 241);
+      color: #ffffff;
+    }
+    .status-pill-present {
+      background-color: rgb(16 185 129);
+      color: #ffffff;
+      border-color: rgb(16 185 129);
+    }
+    .status-pill-absent {
+      background-color: rgb(244 63 94);
+      color: #ffffff;
+      border-color: rgb(244 63 94);
+    }
+    .status-pill-cancelled {
+      background-color: rgb(100 116 139);
+      color: #ffffff;
+      border-color: rgb(100 116 139);
+    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen transition-colors duration-200">
+
+  <!-- SIGN-IN / WORKSPACE ACCESS SCREEN -->
+  <div id="auth-screen" class="min-h-screen flex flex-col justify-between px-4 py-6 bg-gradient-to-br from-slate-50 via-indigo-50/40 to-sky-50/50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950/30">
+    <!-- Auth Top Bar -->
+    <div class="max-w-5xl w-full mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-sm">
+          <i data-lucide="graduation-cap" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <span class="font-bold text-base tracking-tight">AttendMate</span>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">NSMCH Bihta · MBBS Phase-III (Part-2)</p>
+        </div>
+      </div>
+      <button id="auth-theme-toggle-btn" class="p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 shadow-sm transition" title="Toggle Dark Mode">
+        <i data-lucide="moon" class="w-4 h-4 dark:hidden"></i>
+        <i data-lucide="sun" class="w-4 h-4 hidden dark:block text-amber-400"></i>
+      </button>
+    </div>
+
+    <!-- Center Auth Card -->
+    <div class="max-w-md w-full mx-auto my-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl p-6 sm:p-8 space-y-6">
+      <div class="text-center space-y-2">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+          Welcome to Your Workspace
+        </span>
+        <h1 class="text-2xl font-bold tracking-tight">Sign in to AttendMate</h1>
+        <p class="text-xs text-slate-500 dark:text-slate-400">Batch 2023 · Session 2026–2027 · Auto-maps your clinical posting roster from your roll number.</p>
+      </div>
+
+      <!-- Official Google Sign-In Section -->
+      <div class="space-y-2.5">
+        <div id="google-btn-container" class="flex justify-center min-h-[42px] hidden"></div>
+        <button type="button" id="google-setup-btn" class="w-full py-2.5 px-4 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 font-semibold text-sm shadow-sm transition flex items-center justify-center gap-2.5">
+          <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.2-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82z"/>
+            <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96H1.29v3.09C3.26 21.3 7.31 24 12 24z"/>
+            <path fill="#FBBC05" d="M5.27 14.29c-.25-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.98-3.09z"/>
+            <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.98 3.09c.95-2.85 3.6-4.96 6.73-4.96z"/>
+          </svg>
+          <span>Continue with Google</span>
+        </button>
+
+        <!-- Inline Client ID Config Drawer (shown if no Client ID configured yet) -->
+        <div id="google-config-box" class="hidden rounded-xl border border-indigo-200 dark:border-indigo-900 bg-indigo-50/70 dark:bg-indigo-950/40 p-3 space-y-2 text-xs">
+          <p class="font-bold text-indigo-800 dark:text-indigo-300">Connect Your Google OAuth Client ID</p>
+          <p class="text-[11px] text-slate-600 dark:text-slate-400 leading-snug">
+            Paste your Google Cloud Web OAuth Client ID (with your GitHub Pages / Netlify URL added under Authorized JavaScript origins) to enable live Google Sign-In.
+          </p>
+          <div class="flex gap-1.5">
+            <input id="google-client-id-input" type="text" placeholder="1234567890-xxxx.apps.googleusercontent.com" class="flex-1 px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-[11px] focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            <button type="button" id="save-google-client-id-btn" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-[11px] transition">Save</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="relative flex items-center py-0.5">
+        <div class="flex-grow border-t border-slate-200 dark:border-slate-800"></div>
+        <span class="shrink mx-3 text-[11px] font-semibold uppercase tracking-wider text-slate-400">or use roll number</span>
+        <div class="flex-grow border-t border-slate-200 dark:border-slate-800"></div>
+      </div>
+
+      <!-- Mode Switcher -->
+      <div class="grid grid-cols-2 gap-1 p-1 rounded-xl bg-slate-100 dark:bg-slate-800">
+        <button id="auth-tab-signin" class="py-2 rounded-lg text-xs font-bold bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm transition">Sign In</button>
+        <button id="auth-tab-register" class="py-2 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition">New Profile</button>
+      </div>
+
+      <!-- Saved Profiles Quick Pick (shown if profiles exist) -->
+      <div id="saved-profiles-wrap" class="hidden space-y-2">
+        <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Saved on this device</p>
+        <div id="saved-profiles-list" class="flex flex-wrap gap-2"></div>
+      </div>
+
+      <!-- Auth Form -->
+      <form id="auth-form" class="space-y-4">
+        <div id="auth-name-wrap" class="hidden">
+          <label for="auth-name" class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Student Name</label>
+          <input id="auth-name" type="text" placeholder="e.g., Ananya Singh" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label for="auth-roll" class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Roll Number (1–100)</label>
+            <input id="auth-roll" type="number" min="1" max="100" value="1" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+          <div class="flex flex-col justify-end">
+            <div id="auth-group-badge" class="px-3 py-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-xs font-bold text-indigo-700 dark:text-indigo-300 text-center">
+              Group A · A1
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label for="auth-pin" class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
+            4-Digit Passcode <span class="font-normal text-slate-400" id="auth-pin-hint">(optional local lock)</span>
+          </label>
+          <input id="auth-pin" type="password" inputmode="numeric" maxlength="4" placeholder="•••• (leave blank for no PIN)" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm tracking-widest focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+
+        <p id="auth-error" class="hidden text-xs font-semibold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 rounded-xl px-3 py-2"></p>
+
+        <button type="submit" id="auth-submit-btn" class="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-sm transition flex items-center justify-center gap-2">
+          <i data-lucide="log-in" class="w-4 h-4"></i>
+          <span id="auth-submit-label">Open My Workspace</span>
+        </button>
+      </form>
+
+      <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
+        <span class="flex items-center gap-1"><i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-500"></i> 100% Local &amp; Private</span>
+        <span>Phase-III (Part-2) · 2023</span>
+      </div>
+    </div>
+
+    <!-- Auth Footer -->
+    <p class="text-center text-[11px] text-slate-400 dark:text-slate-500">
+      Data stays strictly on your browser · Export JSON backups anytime from Settings
+    </p>
+  </div>
+
+  <!-- MAIN APPLICATION SHELL (Hidden until signed in) -->
+  <div id="app-shell" class="hidden pb-20 md:pb-10">
+
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur border-b border-slate-200 dark:border-slate-800">
+    <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-3">
+      <!-- Brand -->
+      <div class="flex items-center gap-2.5 min-w-0">
+        <div class="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white shrink-0 shadow-sm">
+          <i data-lucide="graduation-cap" class="w-5 h-5"></i>
+        </div>
+        <div class="min-w-0">
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-base tracking-tight truncate">AttendMate</span>
+            <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+              Phase-III (Part-2) · 2023
+            </span>
+          </div>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate">NSMCH Bihta, Patna · Session 2026–2027</p>
+        </div>
+      </div>
+
+      <!-- Desktop Tabs -->
+      <nav class="hidden md:flex items-center gap-1 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl" aria-label="Primary Navigation">
+        <button data-tab="today" class="tab-btn active px-3.5 py-1.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition flex items-center gap-1.5">
+          <i data-lucide="calendar-check" class="w-4 h-4"></i> Today
+        </button>
+        <button data-tab="subjects" class="tab-btn px-3.5 py-1.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition flex items-center gap-1.5">
+          <i data-lucide="bar-chart-3" class="w-4 h-4"></i> Subjects &amp; Bunk
+        </button>
+        <button data-tab="timetable" class="tab-btn px-3.5 py-1.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition flex items-center gap-1.5">
+          <i data-lucide="table-2" class="w-4 h-4"></i> Timetable &amp; Roster
+        </button>
+        <button data-tab="exams" class="tab-btn px-3.5 py-1.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition flex items-center gap-1.5">
+          <i data-lucide="book-open-check" class="w-4 h-4"></i> Exams &amp; Modules
+        </button>
+      </nav>
+
+      <!-- Right Controls -->
+      <div class="flex items-center gap-2 shrink-0">
+        <button id="open-profile-btn" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold transition border border-slate-200 dark:border-slate-700" title="Change Roll Number & Group">
+          <i data-lucide="user-round" class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400"></i>
+          <span id="header-roll-badge">Roll 01 · A1</span>
+        </button>
+        <button id="open-settings-btn" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition" title="Settings & Backup">
+          <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
+        </button>
+        <button id="theme-toggle-btn" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition" title="Toggle Dark Mode">
+          <i data-lucide="moon" class="w-4 h-4 dark:hidden"></i>
+          <i data-lucide="sun" class="w-4 h-4 hidden dark:block text-amber-400"></i>
+        </button>
+        <button id="signout-btn" class="p-2 rounded-lg bg-rose-50 dark:bg-rose-950/50 hover:bg-rose-100 dark:hover:bg-rose-900/60 text-rose-600 dark:text-rose-400 transition" title="Sign Out / Switch Roll">
+          <i data-lucide="log-out" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="max-w-6xl mx-auto px-4 pt-5 space-y-6">
+
+    <!-- TAB 1: TODAY & ATTENDANCE MARKING -->
+    <section id="view-today" class="space-y-5">
+      <!-- Top Summary Strip -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <!-- Date Navigator Card -->
+        <div class="lg:col-span-2 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-5 shadow-sm flex flex-col justify-between gap-4">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-400" id="today-day-label">Sunday</p>
+              <h1 class="text-xl sm:text-2xl font-bold tracking-tight" id="today-date-heading">22 Nov 2026</h1>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button id="prev-day-btn" class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition" title="Previous Day">
+                <i data-lucide="chevron-left" class="w-4 h-4"></i>
+              </button>
+              <input type="date" id="date-picker" class="px-2.5 py-1.5 text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              <button id="next-day-btn" class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition" title="Next Day">
+                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+              </button>
+              <button id="jump-today-btn" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900 transition">
+                Today
+              </button>
+            </div>
+          </div>
+
+          <!-- Active Clinical Posting Banner -->
+          <div id="active-posting-banner" class="rounded-xl p-3.5 bg-gradient-to-r from-indigo-50 to-sky-50 dark:from-indigo-950/60 dark:to-sky-950/40 border border-indigo-100 dark:border-indigo-900/60 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0">
+                <i data-lucide="stethoscope" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <p class="text-[11px] font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Active Clinical Posting (10:00 AM – 01:00 PM)</p>
+                <p class="text-sm sm:text-base font-bold text-slate-900 dark:text-white" id="posting-dept-name">Loading...</p>
+                <p class="text-xs text-slate-600 dark:text-slate-400" id="posting-date-range"></p>
+              </div>
+            </div>
+            <span id="posting-subgroup-pill" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white dark:bg-slate-900 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+              Group A · A1
+            </span>
+          </div>
+        </div>
+
+        <!-- Quick Overall Attendance KPI Card -->
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-5 shadow-sm flex flex-col justify-between gap-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Live Standing</span>
+            <div class="flex items-center gap-2.5">
+              <button id="open-backfill-btn" class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1">
+                <i data-lucide="history" class="w-3.5 h-3.5"></i> Fill Past Classes
+              </button>
+              <button id="open-baseline-btn" class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1">
+                <i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Prior Totals
+              </button>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-100 dark:border-slate-800">
+              <p class="text-[11px] font-medium text-slate-500 dark:text-slate-400">Theory (Target <span id="kpi-theory-target">75</span>%)</p>
+              <p class="text-2xl font-bold mt-0.5" id="kpi-theory-pct">—</p>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5" id="kpi-theory-counts">0 / 0 classes</p>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-100 dark:border-slate-800">
+              <p class="text-[11px] font-medium text-slate-500 dark:text-slate-400">Clinical (Target <span id="kpi-clinical-target">80</span>%)</p>
+              <p class="text-2xl font-bold mt-0.5" id="kpi-clinical-pct">—</p>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5" id="kpi-clinical-counts">0 / 0 postings</p>
+            </div>
+          </div>
+          <div class="flex items-center justify-between text-xs pt-1 border-t border-slate-100 dark:border-slate-800">
+            <span class="text-slate-500 dark:text-slate-400" id="next-exam-mini">Next Exam: 1st(A) IA</span>
+            <span class="font-semibold text-indigo-600 dark:text-indigo-400" id="next-exam-days">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Day Actions & Class List -->
+      <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-5 shadow-sm space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="text-base font-bold">Daily Class Schedule</h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400" id="day-status-summary">Tap Present, Absent, or Holiday for each slot.</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2" id="day-bulk-actions">
+            <button id="mark-all-present-btn" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 transition flex items-center gap-1.5">
+              <i data-lucide="check-check" class="w-3.5 h-3.5"></i> Mark All Present
+            </button>
+            <button id="mark-all-holiday-btn" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 transition flex items-center gap-1.5">
+              <i data-lucide="calendar-off" class="w-3.5 h-3.5"></i> Mark Holiday
+            </button>
+            <button id="clear-day-btn" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-500 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 transition">
+              Clear Day
+            </button>
+          </div>
+        </div>
+
+        <div id="today-slots-container" class="space-y-3"></div>
+      </div>
+    </section>
+
+    <!-- TAB 2: SUBJECTS & BUNK CALCULATOR -->
+    <section id="view-subjects" class="hidden space-y-5">
+      <!-- Top Controls & Filter -->
+      <div class="flex flex-wrap items-center justify-between gap-3 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 shadow-sm">
+        <div class="flex items-center gap-2">
+          <button data-subj-filter="theory" class="subj-filter-btn px-3.5 py-1.5 rounded-lg text-sm font-semibold bg-indigo-600 text-white transition">Theory / Lectures</button>
+          <button data-subj-filter="clinical" class="subj-filter-btn px-3.5 py-1.5 rounded-lg text-sm font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 transition">Clinical Postings</button>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <button id="open-backfill-btn-2" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 transition flex items-center gap-1.5">
+            <i data-lucide="history" class="w-3.5 h-3.5"></i> Fill Past Classes
+          </button>
+          <button id="open-leave-planner-btn" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition flex items-center gap-1.5">
+            <i data-lucide="plane-takeoff" class="w-3.5 h-3.5"></i> Plan Leave / Bunk Simulator
+          </button>
+          <button id="open-baseline-btn-2" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition flex items-center gap-1.5">
+            <i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Edit Prior Counts
+          </button>
+        </div>
+      </div>
+
+      <!-- Skip Priority Advisor: Can Miss vs Can't Miss -->
+      <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-5 shadow-sm space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 class="text-base font-bold flex items-center gap-2">
+              <i data-lucide="shield-alert" class="w-4 h-4 text-indigo-600 dark:text-indigo-400"></i>
+              Can I Miss? — Subject Priority Advisor
+            </h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400" id="advisor-subtitle">Combines your live attendance with weekly class frequency (low-frequency subjects like ENT &amp; Ophtha carry higher skip risk).</p>
+          </div>
+          <span class="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300" id="advisor-mode-badge">Theory Advisor</span>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div class="rounded-xl border border-rose-200 dark:border-rose-900/70 bg-rose-50/60 dark:bg-rose-950/25 p-3.5 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-rose-700 dark:text-rose-300 flex items-center gap-1.5">
+                <i data-lucide="x-circle" class="w-4 h-4"></i> Don't Miss (High Risk)
+              </span>
+              <span id="advisor-dont-count" class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-rose-100 dark:bg-rose-900/60 text-rose-700 dark:text-rose-200">0</span>
+            </div>
+            <div id="advisor-dont-list" class="space-y-1.5 text-xs"></div>
+          </div>
+          <div class="rounded-xl border border-amber-200 dark:border-amber-900/70 bg-amber-50/60 dark:bg-amber-950/25 p-3.5 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-amber-800 dark:text-amber-300 flex items-center gap-1.5">
+                <i data-lucide="alert-circle" class="w-4 h-4"></i> Be Careful (Tight)
+              </span>
+              <span id="advisor-careful-count" class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-200">0</span>
+            </div>
+            <div id="advisor-careful-list" class="space-y-1.5 text-xs"></div>
+          </div>
+          <div class="rounded-xl border border-emerald-200 dark:border-emerald-900/70 bg-emerald-50/60 dark:bg-emerald-950/25 p-3.5 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-emerald-700 dark:text-emerald-300 flex items-center gap-1.5">
+                <i data-lucide="check-circle-2" class="w-4 h-4"></i> Safe to Miss (Buffer)
+              </span>
+              <span id="advisor-safe-count" class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-200">0</span>
+            </div>
+            <div id="advisor-safe-list" class="space-y-1.5 text-xs"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chart Card -->
+      <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-5 shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <h2 class="text-base font-bold" id="chart-title">Theory Attendance Overview</h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400" id="chart-subtitle">Comparing logged + prior attendance against your target threshold</p>
+          </div>
+          <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300" id="chart-target-badge">Target: 75%</span>
+        </div>
+        <div class="relative h-72">
+          <canvas id="attendanceChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Subject Cards Grid -->
+      <div id="subjects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </section>
+
+    <!-- TAB 3: TIMETABLE & CLINICAL POSTING ROSTER -->
+    <section id="view-timetable" class="hidden space-y-5">
+      <!-- Master Weekly Timetable -->
+      <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-5 shadow-sm space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 class="text-base font-bold">Phase-III (Part-2) Master Time Table</h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400">NSMCH Bihta, Patna · Batch 2023 · Session 2026–2027 (Commences 10-10-2026)</p>
+          </div>
+          <span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">Mon – Sat · 09:00 AM to 05:00 PM</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs sm:text-sm min-w-[720px]">
+            <thead>
+              <tr class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200">
+                <th class="p-2.5 rounded-tl-lg font-semibold">Day</th>
+                <th class="p-2.5 font-semibold">09–10 AM</th>
+                <th class="p-2.5 font-semibold">10 AM–01 PM</th>
+                <th class="p-2.5 font-semibold">01–02 PM</th>
+                <th class="p-2.5 font-semibold">02–03 PM</th>
+                <th class="p-2.5 font-semibold">03–04 PM</th>
+                <th class="p-2.5 rounded-tr-lg font-semibold">04–05 PM</th>
+              </tr>
+            </thead>
+            <tbody id="master-timetable-body" class="divide-y divide-slate-200 dark:divide-slate-800"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Personalized Clinical Posting Roster -->
+      <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-5 shadow-sm space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="text-base font-bold">Your Clinical Posting Schedule</h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400" id="roster-subtitle">Automatically filtered for your Roll Number and Sub-Group</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <label for="roster-subgroup-select" class="text-xs font-medium text-slate-500 dark:text-slate-400">Preview Sub-Group:</label>
+            <select id="roster-subgroup-select" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"></select>
+          </div>
+        </div>
+        <div id="personal-roster-list" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+      </div>
+
+      <!-- Group & Roll No Reference -->
+      <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-5 shadow-sm space-y-3">
+        <h3 class="text-sm font-bold">Batch 2023 Group &amp; Sub-Group Roll Number Mapping</h3>
+        <div id="group-mapping-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-xs"></div>
+      </div>
+    </section>
+
+    <!-- TAB 4: EXAMS, AETCOM, PANDEMIC & CURRICULUM HOURS -->
+    <section id="view-exams" class="hidden space-y-5">
+      <!-- Internal Assessment Schedule -->
+      <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-5 shadow-sm space-y-4">
+        <div>
+          <h2 class="text-base font-bold">Internal Assessment &amp; Sentup Schedule</h2>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Official 2026–2027 examination dates with live countdowns</p>
+        </div>
+        <div id="exams-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+      </div>
+
+      <!-- AETCOM & Pandemic Module Checklists -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <!-- AETCOM -->
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-5 shadow-sm space-y-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-base font-bold">AETCOM Modules (52 Hrs)</h2>
+              <p class="text-xs text-slate-500 dark:text-slate-400">9 mandatory competencies · check off as completed</p>
+            </div>
+            <span id="aetcom-progress-badge" class="px-2.5 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">0 / 9</span>
+          </div>
+          <div id="aetcom-list" class="space-y-2.5 max-h-[480px] overflow-y-auto pr-1"></div>
+        </div>
+
+        <!-- Pandemic Module -->
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-5 shadow-sm space-y-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-base font-bold">Pandemic Module (28 Hrs Scheduled)</h2>
+              <p class="text-xs text-slate-500 dark:text-slate-400">7 modules (Saturdays 04–05 PM) · check off as completed</p>
+            </div>
+            <span id="pandemic-progress-badge" class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">0 / 7</span>
+          </div>
+          <div id="pandemic-list" class="space-y-2.5 max-h-[480px] overflow-y-auto pr-1"></div>
+        </div>
+      </div>
+
+      <!-- Competency-Based UG Curriculum Hours Table -->
+      <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-5 shadow-sm space-y-3">
+        <div>
+          <h2 class="text-base font-bold">Competency-Based UG Hours Distribution</h2>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Total 1,356 academic hours and 62 clinical posting weeks across Phase-III (Part-2)</p>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs sm:text-sm min-w-[600px]">
+            <thead>
+              <tr class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200">
+                <th class="p-2.5 rounded-tl-lg font-semibold">Subject</th>
+                <th class="p-2.5 font-semibold text-right">Lecture (Hrs)</th>
+                <th class="p-2.5 font-semibold text-right">SGL (Hrs)</th>
+                <th class="p-2.5 font-semibold text-right">SDL (Hrs)</th>
+                <th class="p-2.5 font-semibold text-right">Total (Hrs)</th>
+                <th class="p-2.5 rounded-tr-lg font-semibold text-right">Clinical Posting</th>
+              </tr>
+            </thead>
+            <tbody id="curriculum-hours-body" class="divide-y divide-slate-200 dark:divide-slate-800"></tbody>
+            <tfoot>
+              <tr class="bg-slate-100 dark:bg-slate-800 font-bold">
+                <td class="p-2.5 rounded-bl-lg">TOTAL</td>
+                <td class="p-2.5 text-right">444</td>
+                <td class="p-2.5 text-right">610</td>
+                <td class="p-2.5 text-right">302</td>
+                <td class="p-2.5 text-right">1,356 Hrs</td>
+                <td class="p-2.5 rounded-br-lg text-right">62 Weeks</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Mobile Bottom Navigation -->
+  <nav class="md:hidden fixed bottom-0 inset-x-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur border-t border-slate-200 dark:border-slate-800 px-2 py-1.5 grid grid-cols-4 gap-1" aria-label="Mobile Navigation">
+    <button data-tab="today" class="tab-btn active flex flex-col items-center justify-center py-1.5 rounded-xl text-[11px] font-semibold text-slate-600 dark:text-slate-300">
+      <i data-lucide="calendar-check" class="w-4 h-4 mb-0.5"></i> Today
+    </button>
+    <button data-tab="subjects" class="tab-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-[11px] font-semibold text-slate-600 dark:text-slate-300">
+      <i data-lucide="bar-chart-3" class="w-4 h-4 mb-0.5"></i> Subjects
+    </button>
+    <button data-tab="timetable" class="tab-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-[11px] font-semibold text-slate-600 dark:text-slate-300">
+      <i data-lucide="table-2" class="w-4 h-4 mb-0.5"></i> Roster
+    </button>
+    <button data-tab="exams" class="tab-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-[11px] font-semibold text-slate-600 dark:text-slate-300">
+      <i data-lucide="book-open-check" class="w-4 h-4 mb-0.5"></i> Exams
+    </button>
+  </nav>
+
+  <!-- MODAL: SETTINGS, PROFILE & BACKUP -->
+  <div id="settings-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-md shadow-xl overflow-hidden">
+      <div class="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <h3 class="font-bold text-base">Student Profile &amp; Settings</h3>
+        <button data-close-modal="settings-modal" class="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <div class="p-5 space-y-4 max-h-[75vh] overflow-y-auto">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1" for="input-student-name">Student Name (Optional)</label>
+          <input id="input-student-name" type="text" placeholder="e.g., Rahul Kumar" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1" for="input-roll-no">Roll Number (1–100)</label>
+            <input id="input-roll-no" type="number" min="1" max="100" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+          <div class="flex flex-col justify-end">
+            <div class="px-3 py-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-xs font-bold text-indigo-700 dark:text-indigo-300" id="settings-group-preview">
+              Group A · Sub-Group A1
+            </div>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1" for="input-theory-target">Theory Target (%)</label>
+            <input id="input-theory-target" type="number" min="50" max="100" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1" for="input-clinical-target">Clinical Target (%)</label>
+            <input id="input-clinical-target" type="number" min="50" max="100" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+        </div>
+
+        <button id="save-settings-btn" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm transition">
+          Save Profile &amp; Targets
+        </button>
+
+        <div class="pt-3 border-t border-slate-200 dark:border-slate-800 space-y-2.5">
+          <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Local Backup &amp; Export</p>
+          <div class="grid grid-cols-2 gap-2">
+            <button id="export-json-btn" class="px-3 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center justify-center gap-1.5">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i> Export JSON
+            </button>
+            <button id="export-csv-btn" class="px-3 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center justify-center gap-1.5">
+              <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i> Export CSV
+            </button>
+          </div>
+          <label class="block w-full px-3 py-2 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900 transition text-center cursor-pointer border border-dashed border-indigo-300 dark:border-indigo-700">
+            <i data-lucide="upload" class="w-3.5 h-3.5 inline mr-1"></i> Import JSON Backup
+            <input type="file" id="import-json-input" accept=".json" class="hidden" />
+          </label>
+          <button id="reset-all-btn" class="w-full py-2 rounded-xl text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition">
+            Reset All Attendance Data
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: EDIT PRIOR COUNTS (BASELINE FROM OCT 10) -->
+  <div id="baseline-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-2xl shadow-xl overflow-hidden">
+      <div class="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <div>
+          <h3 class="font-bold text-base">Edit Prior Attendance Counts</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Add classes attended/held before you started daily logging (e.g., since 10 Oct 2026).</p>
+        </div>
+        <button data-close-modal="baseline-modal" class="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <div class="p-5 max-h-[65vh] overflow-y-auto">
+        <div id="baseline-rows" class="space-y-2.5"></div>
+      </div>
+      <div class="px-5 py-3.5 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-2 bg-slate-50 dark:bg-slate-900/80">
+        <button data-close-modal="baseline-modal" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition">Cancel</button>
+        <button id="save-baseline-btn" class="px-4 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white transition">Save Prior Counts</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: LEAVE / BUNK SIMULATOR -->
+  <div id="leave-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-xl shadow-xl overflow-hidden">
+      <div class="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <div>
+          <h3 class="font-bold text-base">Leave / Bunk Impact Simulator</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Pick dates you plan to skip to preview the exact attendance drop (Sundays ignored).</p>
+        </div>
+        <button data-close-modal="leave-modal" class="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <div class="p-5 space-y-4 max-h-[70vh] overflow-y-auto">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1" for="leave-start-date">From Date</label>
+            <input type="date" id="leave-start-date" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1" for="leave-end-date">To Date</label>
+            <input type="date" id="leave-end-date" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm" />
+          </div>
+        </div>
+        <button id="run-leave-sim-btn" class="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm transition">
+          Calculate Impact
+        </button>
+        <div id="leave-sim-results" class="space-y-2.5 text-xs"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CONFIRM RESET -->
+  <div id="confirm-reset-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-sm shadow-xl p-5 space-y-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
+          <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="font-bold text-sm">Reset all attendance data?</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400">This clears all logged days, prior counts, and module checkmarks. Export a JSON backup first if needed.</p>
+        </div>
+      </div>
+      <div class="flex justify-end gap-2">
+        <button data-close-modal="confirm-reset-modal" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800">Cancel</button>
+        <button id="confirm-reset-yes-btn" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-rose-600 text-white hover:bg-rose-700">Yes, Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: FILL PAST CLASSES (DATE RANGE & DAY-BY-DAY BACKFILL) -->
+  <div id="backfill-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-2xl shadow-xl overflow-hidden">
+      <div class="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <div>
+          <h3 class="font-bold text-base">Fill Attendance of Previous Classes</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Session commenced 10 Oct 2026. Bulk-fill a date range or pick any past day to mark classes individually.</p>
+        </div>
+        <button data-close-modal="backfill-modal" class="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <div class="p-5 space-y-5 max-h-[75vh] overflow-y-auto">
+        <!-- Quick Bulk Range Fill -->
+        <div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 p-4 space-y-3">
+          <p class="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">1. Quick Date-Range Fill (Mon–Sat, skips Sundays)</p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-500 mb-1" for="backfill-start">From Date</label>
+              <input type="date" id="backfill-start" value="2026-10-10" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-500 mb-1" for="backfill-end">To Date</label>
+              <input type="date" id="backfill-end" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-500 mb-1" for="backfill-scope">Apply To</label>
+              <select id="backfill-scope" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium">
+                <option value="unmarked">Only unmarked slots</option>
+                <option value="overwrite">All slots (overwrite)</option>
+              </select>
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button data-backfill-status="present" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white transition flex items-center gap-1.5">
+              <i data-lucide="check-check" class="w-3.5 h-3.5"></i> Mark Range Present
+            </button>
+            <button data-backfill-status="absent" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-rose-600 hover:bg-rose-700 text-white transition flex items-center gap-1.5">
+              <i data-lucide="x" class="w-3.5 h-3.5"></i> Mark Range Absent
+            </button>
+            <button data-backfill-status="cancelled" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-600 hover:bg-slate-700 text-white transition flex items-center gap-1.5">
+              <i data-lucide="calendar-off" class="w-3.5 h-3.5"></i> Mark Range Holiday
+            </button>
+          </div>
+        </div>
+
+        <!-- Past Working Days Checklist -->
+        <div class="space-y-2.5">
+          <div class="flex items-center justify-between">
+            <p class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">2. Recent Working Days (Click any day to edit slots)</p>
+            <span id="backfill-days-summary" class="text-[11px] font-semibold text-slate-500"></span>
+          </div>
+          <div id="backfill-days-list" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-64 overflow-y-auto pr-1"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  </div> <!-- /#app-shell -->
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-20 md:bottom-6 right-4 z-50 hidden px-4 py-2.5 rounded-xl bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-xs font-semibold shadow-lg transition-all"></div>
+
+  <script>
+    // =========================================================================
+    // 1. GROUNDED NSMCH BIHTA PHASE-III (PART-2) BATCH 2023 DATA
+    // =========================================================================
+
+    const SUBJECTS = [
+      { code: 'IM', name: 'General Medicine', lecture: 95, sgl: 130, sdl: 55, total: 280, clinicalWeeks: 14, weeklySlots: 5, color: '#a855f7' },
+      { code: 'SU', name: 'General Surgery', lecture: 80, sgl: 140, sdl: 40, total: 260, clinicalWeeks: 10, weeklySlots: 5, color: '#eab308' },
+      { code: 'OG', name: 'Obs-Gynae', lecture: 80, sgl: 140, sdl: 40, total: 260, clinicalWeeks: 10, weeklySlots: 5, color: '#0ea5e9' },
+      { code: 'PE', name: 'Pediatrics', lecture: 30, sgl: 60, sdl: 30, total: 120, clinicalWeeks: 5, weeklySlots: 2, color: '#f59e0b' },
+      { code: 'OR', name: 'Orthopaedics + PMR', lecture: 25, sgl: 35, sdl: 25, total: 85, clinicalWeeks: 4, weeklySlots: 2, color: '#22c55e' },
+      { code: 'AETCOM', name: 'AETCOM Module', lecture: 30, sgl: 0, sdl: 22, total: 52, clinicalWeeks: 0, weeklySlots: 1, color: '#6366f1' },
+      { code: 'DR', name: 'Dermatology, Venereology & Leprosy', lecture: 15, sgl: 10, sdl: 15, total: 40, clinicalWeeks: 2, weeklySlots: 0.5, color: '#ec4899' },
+      { code: 'PS', name: 'Psychiatry', lecture: 15, sgl: 15, sdl: 15, total: 45, clinicalWeeks: 4, weeklySlots: 0.5, color: '#14b8a6' },
+      { code: 'EN', name: 'Otorhinolaryngology (ENT)', lecture: 15, sgl: 25, sdl: 15, total: 55, clinicalWeeks: 4, weeklySlots: 1, color: '#f97316' },
+      { code: 'OP', name: 'Ophthalmology', lecture: 15, sgl: 25, sdl: 15, total: 55, clinicalWeeks: 4, weeklySlots: 1, color: '#fb7185' },
+      { code: 'RD', name: 'Radiodiagnosis & Radiotherapy', lecture: 8, sgl: 15, sdl: 15, total: 38, clinicalWeeks: 2, weeklySlots: 0.5, color: '#8b5cf6' },
+      { code: 'AN', name: 'Anesthesiology', lecture: 8, sgl: 15, sdl: 15, total: 38, clinicalWeeks: 3, weeklySlots: 0.5, color: '#06b6d4' },
+      { code: 'PM', name: 'Pandemic Module', lecture: 28, sgl: 0, sdl: 0, total: 28, clinicalWeeks: 0, weeklySlots: 1, color: '#64748b' }
+    ];
+
+    const SUBJECT_MAP = Object.fromEntries(SUBJECTS.map(s => [s.code, s]));
+
+    // Roll number mapping (Page 5 footer)
+    const SUBGROUP_RANGES = [
+      { group: 'A', sub: 'A1', min: 1, max: 4 },
+      { group: 'A', sub: 'A2', min: 5, max: 8 },
+      { group: 'A', sub: 'A3', min: 9, max: 12 },
+      { group: 'A', sub: 'A4', min: 13, max: 16 },
+      { group: 'B', sub: 'B1', min: 17, max: 20 },
+      { group: 'B', sub: 'B2', min: 21, max: 24 },
+      { group: 'B', sub: 'B3', min: 25, max: 28 },
+      { group: 'B', sub: 'B4', min: 29, max: 32 },
+      { group: 'C', sub: 'C1', min: 33, max: 36 },
+      { group: 'C', sub: 'C2', min: 37, max: 40 },
+      { group: 'C', sub: 'C3', min: 41, max: 44 },
+      { group: 'C', sub: 'C4', min: 45, max: 49 },
+      { group: 'D', sub: 'D1', min: 50, max: 53 },
+      { group: 'D', sub: 'D2', min: 54, max: 57 },
+      { group: 'D', sub: 'D3', min: 58, max: 61 },
+      { group: 'D', sub: 'D4', min: 62, max: 66 },
+      { group: 'E', sub: 'E1', min: 67, max: 70 },
+      { group: 'E', sub: 'E2', min: 71, max: 74 },
+      { group: 'E', sub: 'E3', min: 75, max: 78 },
+      { group: 'E', sub: 'E4', min: 79, max: 83 },
+      { group: 'F', sub: 'F1', min: 84, max: 87 },
+      { group: 'F', sub: 'F2', min: 88, max: 91 },
+      { group: 'F', sub: 'F3', min: 92, max: 95 },
+      { group: 'F', sub: 'F4', min: 96, max: 100 }
+    ];
+
+    // Master Weekly Time Table (Page 4) — dayIndex: 1=Mon .. 6=Sat
+    const MASTER_TIMETABLE = {
+      1: [
+        { id: 'mon-09', time: '09:00 – 10:00 AM', subject: 'OG', label: 'Obstetrics & Gynaecology (OG)', type: 'theory' },
+        { id: 'mon-cp', time: '10:00 AM – 01:00 PM', subject: 'CP', label: 'Clinical Posting', type: 'clinical' },
+        { id: 'mon-14', time: '02:00 – 03:00 PM', subject: 'EN', label: 'Otorhinolaryngology (EN)', type: 'theory' },
+        { id: 'mon-15', time: '03:00 – 04:00 PM', subject: 'IM', label: 'General Medicine (IM) — Lecture/SGD/Skill', type: 'theory' },
+        { id: 'mon-16', time: '04:00 – 05:00 PM', subject: 'IM', label: 'General Medicine (IM) — Lecture/SGD/Skill', type: 'theory' }
+      ],
+      2: [
+        { id: 'tue-09', time: '09:00 – 10:00 AM', subject: 'PS', altSubject: 'DR', label: 'Psychiatry (PS) / Dermatology (DR)', type: 'theory' },
+        { id: 'tue-cp', time: '10:00 AM – 01:00 PM', subject: 'CP', label: 'Clinical Posting', type: 'clinical' },
+        { id: 'tue-14', time: '02:00 – 03:00 PM', subject: 'OR', label: 'Orthopedics (OR)', type: 'theory' },
+        { id: 'tue-15', time: '03:00 – 04:00 PM', subject: 'OG', label: 'Obstetrics & Gynaecology (OG) — Lecture/SGD/Skill', type: 'theory' },
+        { id: 'tue-16', time: '04:00 – 05:00 PM', subject: 'OG', label: 'Obstetrics & Gynaecology (OG) — Lecture/SGD/Skill', type: 'theory' }
+      ],
+      3: [
+        { id: 'wed-09', time: '09:00 – 10:00 AM', subject: 'IM', label: 'General Medicine (IM)', type: 'theory' },
+        { id: 'wed-cp', time: '10:00 AM – 01:00 PM', subject: 'CP', label: 'Clinical Posting', type: 'clinical' },
+        { id: 'wed-14', time: '02:00 – 03:00 PM', subject: 'RD', altSubject: 'AN', label: 'Radiodiagnosis (RD) / Anesthesiology (AN)', type: 'theory' },
+        { id: 'wed-15', time: '03:00 – 04:00 PM', subject: 'OG', label: 'Obstetrics & Gynaecology (OG)', type: 'theory' },
+        { id: 'wed-16', time: '04:00 – 05:00 PM', subject: 'SU', label: 'Gen. Surgery (SU)', type: 'theory' }
+      ],
+      4: [
+        { id: 'thu-09', time: '09:00 – 10:00 AM', subject: 'PE', label: 'Pediatrics (PE)', type: 'theory' },
+        { id: 'thu-cp', time: '10:00 AM – 01:00 PM', subject: 'CP', label: 'Clinical Posting', type: 'clinical' },
+        { id: 'thu-14', time: '02:00 – 03:00 PM', subject: 'OG', label: 'Obstetrics & Gynaecology (OG)', type: 'theory' },
+        { id: 'thu-15', time: '03:00 – 04:00 PM', subject: 'SU', label: 'Gen. Surgery (SU) — Lecture/SGD/Skill', type: 'theory' },
+        { id: 'thu-16', time: '04:00 – 05:00 PM', subject: 'SU', label: 'Gen. Surgery (SU) — Lecture/SGD/Skill', type: 'theory' }
+      ],
+      5: [
+        { id: 'fri-09', time: '09:00 – 10:00 AM', subject: 'SU', label: 'Gen. Surgery (SU)', type: 'theory' },
+        { id: 'fri-cp', time: '10:00 AM – 01:00 PM', subject: 'CP', label: 'Clinical Posting', type: 'clinical' },
+        { id: 'fri-14', time: '02:00 – 03:00 PM', subject: 'IM', label: 'General Medicine (IM)', type: 'theory' },
+        { id: 'fri-15', time: '03:00 – 04:00 PM', subject: 'PE', label: 'Pediatrics (PE)', type: 'theory' },
+        { id: 'fri-16', time: '04:00 – 05:00 PM', subject: 'OP', label: 'Ophthalmology (OP)', type: 'theory' }
+      ],
+      6: [
+        { id: 'sat-09', time: '09:00 – 10:00 AM', subject: 'OR', label: 'Orthopedics (OR)', type: 'theory' },
+        { id: 'sat-cp', time: '10:00 AM – 01:00 PM', subject: 'CP', label: 'Clinical Posting', type: 'clinical' },
+        { id: 'sat-14', time: '02:00 – 03:00 PM', subject: 'SU', label: 'Gen. Surgery (SU)', type: 'theory' },
+        { id: 'sat-15', time: '03:00 – 04:00 PM', subject: 'IM', label: 'General Medicine (IM)', type: 'theory' },
+        { id: 'sat-16', time: '04:00 – 05:00 PM', subject: 'PM', label: 'Pandemic Module', type: 'theory' }
+      ]
+    };
+
+    // Clinical Posting Roster (Page 5) — exact dates from official PDF
+    const MINOR_ROSTER = [
+      // Cycle 1 (A)
+      { start: '2026-10-10', end: '2026-10-28', DR: ['A1'], RD: ['A2'], AN: ['A3'], PS: ['A4'] },
+      { start: '2026-10-29', end: '2026-11-19', DR: ['A4'], RD: ['A1'], AN: ['A2'], PS: ['A3'] },
+      { start: '2026-11-20', end: '2026-12-03', DR: ['A3'], RD: ['A4'], AN: ['A1'], PS: ['A2'] },
+      { start: '2026-12-04', end: '2026-12-17', DR: ['A2'], RD: ['A3'], AN: ['A4'], PS: ['A1'] },
+      // Cycle 2 (F)
+      { start: '2026-12-18', end: '2027-01-09', DR: ['F1'], RD: ['F2'], AN: ['F3'], PS: ['F4'] },
+      { start: '2027-01-11', end: '2027-01-23', DR: ['F4'], RD: ['F1'], AN: ['F2'], PS: ['F3'] },
+      { start: '2027-01-25', end: '2027-02-13', DR: ['F3'], RD: ['F4'], AN: ['F1'], PS: ['F2'] },
+      { start: '2027-02-15', end: '2027-02-27', DR: ['F2'], RD: ['F3'], AN: ['F4'], PS: ['F1'] },
+      // Cycle 3 (E)
+      { start: '2027-03-01', end: '2027-03-13', DR: ['E1'], RD: ['E2'], AN: ['E3'], PS: ['E4'] },
+      { start: '2027-03-22', end: '2027-04-03', DR: ['E4'], RD: ['E1'], AN: ['E2'], PS: ['E3'] },
+      { start: '2027-04-05', end: '2027-04-17', DR: ['E3'], RD: ['E4'], AN: ['E1'], PS: ['E2'] },
+      { start: '2027-04-19', end: '2027-05-01', DR: ['E2'], RD: ['E3'], AN: ['E4'], PS: ['E1'] },
+      // Cycle 4 (D)
+      { start: '2027-05-03', end: '2027-05-15', DR: ['D1'], RD: ['D2'], AN: ['D3'], PS: ['D4'] },
+      { start: '2027-05-17', end: '2027-05-31', DR: ['D4'], RD: ['D1'], AN: ['D2'], PS: ['D3'] },
+      { start: '2027-06-10', end: '2027-06-23', DR: ['D3'], RD: ['D4'], AN: ['D1'], PS: ['D2'] },
+      { start: '2027-06-24', end: '2027-07-07', DR: ['D2'], RD: ['D3'], AN: ['D4'], PS: ['D1'] },
+      // Cycle 5 (C)
+      { start: '2027-07-08', end: '2027-07-24', DR: ['C1'], RD: ['C2'], AN: ['C3'], PS: ['C4'] },
+      { start: '2027-08-02', end: '2027-08-14', DR: ['C4'], RD: ['C1'], AN: ['C2'], PS: ['C3'] },
+      { start: '2027-08-16', end: '2027-08-28', DR: ['C3'], RD: ['C4'], AN: ['C1'], PS: ['C2'] },
+      { start: '2027-09-06', end: '2027-09-18', DR: ['C2'], RD: ['C3'], AN: ['C4'], PS: ['C1'] },
+      // Cycle 6 (B)
+      { start: '2027-09-20', end: '2027-10-02', DR: ['B1'], RD: ['B2'], AN: ['B3'], PS: ['B4'] },
+      { start: '2027-10-04', end: '2027-10-20', DR: ['B4'], RD: ['B1'], AN: ['B2'], PS: ['B3'] },
+      { start: '2027-10-21', end: '2027-11-13', DR: ['B3'], RD: ['B4'], AN: ['B1'], PS: ['B2'] },
+      { start: '2027-11-15', end: '2027-11-27', DR: ['B2'], RD: ['B3'], AN: ['B4'], PS: ['B1'] }
+    ];
+
+    const MID_ROSTER = [
+      { start: '2026-10-10', end: '2026-11-19', PE: ['B1','B2'], OR: ['B3','B4'], EN: ['C1','C2'], OP: ['C3','C4'] },
+      { start: '2026-11-20', end: '2026-12-17', PE: ['B3','B4'], OR: ['B1','B2'], EN: ['C3','C4'], OP: ['C1','C2'] },
+      { start: '2026-12-18', end: '2027-01-23', PE: ['A1','A2'], OR: ['A3','A4'], EN: ['B1','B2'], OP: ['B3','B4'] },
+      { start: '2027-01-25', end: '2027-02-27', PE: ['A3','A4'], OR: ['A1','A2'], EN: ['B3','B4'], OP: ['B1','B2'] },
+      { start: '2027-03-01', end: '2027-04-03', PE: ['F1','F2'], OR: ['F3','F4'], EN: ['A1','A2'], OP: ['A3','A4'] },
+      { start: '2027-04-05', end: '2027-05-01', PE: ['F3','F4'], OR: ['F1','F2'], EN: ['A3','A4'], OP: ['A1','A2'] },
+      { start: '2027-05-03', end: '2027-05-31', PE: ['E1','E2'], OR: ['E3','E4'], EN: ['F1','F2'], OP: ['F3','F4'] },
+      { start: '2027-06-10', end: '2027-07-07', PE: ['E3','E4'], OR: ['E1','E2'], EN: ['F3','F4'], OP: ['F1','F2'] },
+      { start: '2027-07-08', end: '2027-08-14', PE: ['D1','D2'], OR: ['D3','D4'], EN: ['E1','E2'], OP: ['E3','E4'] },
+      { start: '2027-08-16', end: '2027-09-18', PE: ['D3','D4'], OR: ['D1','D2'], EN: ['E3','E4'], OP: ['E1','E2'] },
+      { start: '2027-09-20', end: '2027-10-20', PE: ['C1','C2'], OR: ['C3','C4'], EN: ['D1','D2'], OP: ['D3','D4'] },
+      { start: '2027-10-21', end: '2027-11-27', PE: ['C3','C4'], OR: ['C1','C2'], EN: ['D3','D4'], OP: ['D1','D2'] }
+    ];
+
+    const MAJOR_ROSTER = [
+      { start: '2026-10-10', end: '2026-12-17', IM: ['D'], SU: ['E'], OG: ['F'] },
+      { start: '2026-12-18', end: '2027-02-27', IM: ['C'], SU: ['D'], OG: ['E'] },
+      { start: '2027-03-01', end: '2027-05-01', IM: ['B'], SU: ['C'], OG: ['D'] },
+      { start: '2027-05-03', end: '2027-07-07', IM: ['A'], SU: ['B'], OG: ['C'] },
+      { start: '2027-07-08', end: '2027-09-18', IM: ['F'], SU: ['A'], OG: ['B'] },
+      { start: '2027-09-20', end: '2027-11-27', IM: ['E'], SU: ['F'], OG: ['A'] }
+    ];
+
+    const EXAM_CLINICAL_ROSTER = [
+      { start: '2027-11-29', end: '2027-12-04', IM: ['A','B'], SU: ['C','D'], OG: ['E','F'], note: 'Exam Oriented Clinical Class' },
+      { start: '2027-12-06', end: '2027-12-10', IM: ['E','F'], SU: ['A','B'], OG: ['C','D'], note: 'Exam Oriented Clinical Class' },
+      { start: '2028-01-03', end: '2028-01-08', IM: ['C','D'], SU: ['E','F'], OG: ['A','B'], note: 'Exam Oriented Clinical Class' }
+    ];
+
+    // Page 2: AETCOM Modules
+    const AETCOM_MODULES = [
+      { id: '4.1', title: '4.1 (A & B): The Foundation of Communication-5', hours: '5 hrs (1+2+2)', dept: 'General Medicine and Allied Subjects', topic: 'A: Demonstrate ability to communicate to patients in a patient, respectful, nonthreatening, non-judgmental and empathetic manner. B: Communicate diagnostic and therapeutic options to patient and family in a simulated environment.' },
+      { id: '4.2', title: '4.2: Case Studies in Medico-legal and Ethical Situations', hours: '6 hrs (1+3-SDL+1+1)', dept: 'Obs/ Gynaecology', topic: 'Identify, discuss and defend medico-legal, socioeconomic and ethical issues as it pertains to abortion / Medical Termination of Pregnancy and reproductive rights.' },
+      { id: '4.3', title: '4.3: Case Studies in Medico-legal and Ethical Situations', hours: '6 hrs (1+3-SDL+1+1)', dept: 'General Medicine and Allied Subjects', topic: 'Identify and discuss medico-legal, socio-economic and ethical issues as it pertains to organ donation.' },
+      { id: '4.4', title: '4.4 (A & B): Case Studies in Ethics, Empathy & Doctor-Patient Relationship', hours: '6 hrs (1+3-SDL+1+1)', dept: 'General Surgery and Allied Subjects', topic: 'A: Demonstrate empathy in patient encounters. B: Communicate care options to patient and family with a terminal illness in a simulated environment.' },
+      { id: '4.5', title: '4.5: Case Studies in Ethics: The Doctor-Industry Relationship', hours: '6 hrs (1+3-SDL+1+1)', dept: 'General Surgery and Allied Subjects', topic: 'Identify, discuss and defend medico-legal, socio-cultural, professional and ethical issues in physician-industry relationships.' },
+      { id: '4.6', title: '4.6: Case Studies in Ethics: The Doctor-Industry Relationship', hours: '6 hrs (1+3-SDL+1+1)', dept: 'General Surgery and Allied Subjects', topic: 'Identify conflicts of interest in patient care and professional relationships and describe the correct response to these conflicts.' },
+      { id: '4.7', title: '4.7: Case Studies in Ethics and Patient Autonomy', hours: '6 hrs (1+3-SDL+1+1)', dept: 'Obs/ Gynaecology', topic: 'Identify conflicts of interest in patient care and professional relationships and describe the correct response to these conflicts.' },
+      { id: '4.8', title: '4.8 (A & B): Dealing with Death', hours: '6 hrs (1+3-SDL+1+1)', dept: 'Obs/ Gynaecology', topic: 'A: Identify conflicts of interest in patient care and professional relationships and describe the correct response to these conflicts. B: Demonstrate empathy to patient and family with a terminal illness in a simulated environment.' },
+      { id: '4.9', title: '4.9 (A & B): Medical Negligence', hours: '5 hrs (1+3-SDL+1)', dept: 'Paediatrics', topic: 'A: Identify, discuss and defend medico-legal, socio-cultural, professional and ethical issues pertaining to medical negligence. B: Identify, discuss and defend medico-legal, socio-cultural, professional and ethical issues pertaining to malpractice.' }
+    ];
+
+    // Page 3: Pandemic Modules
+    const PANDEMIC_MODULES = [
+      { id: 'P4.1', title: 'Module 4.1 — Triage Concept', hours: '6 Hrs (2+1+2+1)', dept: 'General Medicine', topic: 'Care of patients during pandemics: Triage concept' },
+      { id: 'P4.2', title: 'Module 4.2 — Resuscitation', hours: '8 hrs (2+4+1+1)', dept: 'Anaesthesiology', topic: 'Emergency procedures during pandemics: Resuscitation' },
+      { id: 'P4.3', title: 'Module 4.3 — Managing Death', hours: '2 hrs (1+1)', dept: 'Anaesthesiology', topic: 'Managing death during pandemics' },
+      { id: 'P4.4', title: 'Module 4.4 — Information Management', hours: '4 hrs (2+1+1)', dept: 'General Medicine', topic: 'Information management during pandemics' },
+      { id: 'P4.5', title: 'Module 4.5 — Intensive Care Management', hours: '4 hrs (1+1+1+1)', dept: 'Anaesthesiology', topic: 'Intensive care management during pandemics' },
+      { id: 'P4.6', title: 'Module 4.6 — Palliative Care', hours: '4 hrs (1+1+1+1)', dept: 'General Medicine', topic: 'Palliative Care during pandemics' },
+      { id: 'P4.7', title: 'Module 4.7 — Mental Health Issues', hours: '4 hrs (1+1+1+1)', dept: 'Psychiatry', topic: 'Mental Health Issues During Pandemic' }
+    ];
+
+    // Page 3: Internal Assessments
+    const EXAMS = [
+      { id: 'ia1a', name: '1st (A) Internal Assessment', subjects: 'General Medicine, General Surgery, Obstetrics and Gynecology', start: '2027-02-01', end: '2027-02-06' },
+      { id: 'ia1b', name: '1st (B) Internal Assessment', subjects: 'Pediatrics, Ophthalmology & ENT', start: '2027-03-15', end: '2027-03-20' },
+      { id: 'ia2a', name: '2nd (A) Internal Assessment', subjects: 'General Medicine, General Surgery, Obstetrics and Gynecology', start: '2027-07-26', end: '2027-07-31' },
+      { id: 'ia2b', name: '2nd (B) Internal Assessment', subjects: 'Pediatrics, Ophthalmology & ENT', start: '2027-08-30', end: '2027-09-04' },
+      { id: 'sentup', name: 'Sentup / Pre-University Exam', subjects: 'General Medicine, General Surgery (25% Orthopedics), Obstetrics and Gynecology, Pediatrics, Ophthalmology & ENT', start: '2027-12-11', end: '2027-12-24' }
+    ];
+
+    // =========================================================================
+    // 2. STATE & PERSISTENCE
+    // =========================================================================
+
+    // Paste your Google Cloud OAuth 2.0 Web Client ID below (optional — or set it from the Sign-In screen)
+    const DEFAULT_GOOGLE_CLIENT_ID = '';
+    const GOOGLE_CID_KEY = 'attendmate_nsmch_google_cid_v1';
+    const STORAGE_KEY = 'attendmate_nsmch_2023_v1';
+    const ACCOUNTS_KEY = 'attendmate_nsmch_accounts_v1';
+    const SESSION_KEY = 'attendmate_nsmch_session_v1';
+
+    function getGoogleClientId() {
+      if (DEFAULT_GOOGLE_CLIENT_ID) return DEFAULT_GOOGLE_CLIENT_ID;
+      try { return localStorage.getItem(GOOGLE_CID_KEY) || ''; } catch (e) { return ''; }
+    }
+
+    function decodeJwtPayload(token) {
+      try {
+        const part = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+        const json = decodeURIComponent(atob(part).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+        return JSON.parse(json);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function handleGoogleCredential(response) {
+      const payload = decodeJwtPayload(response && response.credential ? response.credential : '');
+      if (!payload || !payload.email) {
+        showToast('Google Sign-In failed. Please try again.');
+        return;
+      }
+      const emailKey = 'g:' + payload.email.toLowerCase();
+      const existing = accountsIndex[emailKey];
+      if (existing) {
+        currentSessionRoll = emailKey;
+        try { localStorage.setItem(SESSION_KEY, emailKey); } catch (e) {}
+        state = {
+          ...createDefaultState(),
+          ...(existing.state || {}),
+          profile: {
+            ...createDefaultState().profile,
+            ...((existing.state && existing.state.profile) || {}),
+            name: payload.name || existing.name || '',
+            email: payload.email
+          }
+        };
+      } else {
+        const roll = Math.max(1, Math.min(100, parseInt(document.getElementById('auth-roll').value, 10) || 1));
+        const fresh = createDefaultState();
+        fresh.profile.name = payload.name || '';
+        fresh.profile.email = payload.email;
+        fresh.profile.rollNo = roll;
+        fresh.profile.darkMode = state.profile.darkMode;
+        accountsIndex[emailKey] = { name: payload.name || '', email: payload.email, rollNo: roll, pin: '', state: fresh };
+        persistAccountsIndex();
+        currentSessionRoll = emailKey;
+        try { localStorage.setItem(SESSION_KEY, emailKey); } catch (e) {}
+        state = fresh;
+      }
+      applyTheme();
+      updateAuthView();
+      renderAll();
+      showToast('Signed in with Google as ' + (payload.given_name || payload.email));
+    }
+
+    function initGoogleSignIn() {
+      const cid = getGoogleClientId();
+      const btnContainer = document.getElementById('google-btn-container');
+      const setupBtn = document.getElementById('google-setup-btn');
+      const configBox = document.getElementById('google-config-box');
+      if (!btnContainer || !setupBtn) return;
+
+      if (cid && window.google && window.google.accounts && window.google.accounts.id) {
+        try {
+          window.google.accounts.id.initialize({
+            client_id: cid,
+            callback: handleGoogleCredential
+          });
+          btnContainer.innerHTML = '';
+          window.google.accounts.id.renderButton(btnContainer, {
+            theme: state.profile.darkMode ? 'filled_black' : 'outline',
+            size: 'large',
+            shape: 'pill',
+            width: 320,
+            text: 'continue_with'
+          });
+          btnContainer.classList.remove('hidden');
+          setupBtn.classList.add('hidden');
+          configBox.classList.add('hidden');
+        } catch (e) {
+          btnContainer.classList.add('hidden');
+          setupBtn.classList.remove('hidden');
+        }
+      } else {
+        btnContainer.classList.add('hidden');
+        setupBtn.classList.remove('hidden');
+      }
+    }
+
+    let authMode = 'signin'; // 'signin' | 'register'
+    let accountsIndex = {};  // { [rollNo]: { name, rollNo, pin, state } }
+    let currentSessionRoll = null;
+
+    function loadAccountsIndex() {
+      try {
+        const raw = localStorage.getItem(ACCOUNTS_KEY);
+        if (raw) accountsIndex = JSON.parse(raw) || {};
+        // Migrate legacy single-user data if present
+        const legacy = localStorage.getItem(STORAGE_KEY);
+        if (legacy && Object.keys(accountsIndex).length === 0) {
+          const parsed = JSON.parse(legacy);
+          const roll = (parsed && parsed.profile && parsed.profile.rollNo) ? parsed.profile.rollNo : 1;
+          accountsIndex[String(roll)] = {
+            name: (parsed && parsed.profile && parsed.profile.name) || '',
+            rollNo: roll,
+            pin: '',
+            state: parsed
+          };
+          localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accountsIndex));
+        }
+        const sess = localStorage.getItem(SESSION_KEY);
+        if (sess && accountsIndex[sess]) {
+          currentSessionRoll = sess;
+        }
+      } catch (e) {
+        accountsIndex = {};
+      }
+    }
+
+    function persistAccountsIndex() {
+      try {
+        localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accountsIndex));
+      } catch (e) {}
+    }
+
+    function getTodayISO() {
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    }
+
+    function createDefaultState() {
+      return {
+        profile: {
+          name: '',
+          rollNo: 1,
+          theoryTarget: 75,
+          clinicalTarget: 80,
+          darkMode: false
+        },
+        logs: {},         // { 'YYYY-MM-DD': { [slotId]: { status: 'present'|'absent'|'cancelled', subject: 'IM' } } }
+        baseline: {},     // { 'IM': { theoryPresent: 0, theoryTotal: 0, clinicalPresent: 0, clinicalTotal: 0 } }
+        aetcomDone: {},
+        pandemicDone: {},
+        selectedDate: getTodayISO(),
+        activeTab: 'today',
+        subjectFilter: 'theory',
+        rosterPreviewSub: null
+      };
+    }
+
+    let state = createDefaultState();
+
+    function loadState() {
+      loadAccountsIndex();
+      if (currentSessionRoll && accountsIndex[currentSessionRoll] && accountsIndex[currentSessionRoll].state) {
+        const parsed = accountsIndex[currentSessionRoll].state;
+        state = {
+          ...createDefaultState(),
+          ...parsed,
+          profile: { ...createDefaultState().profile, ...(parsed.profile || {}) }
+        };
+      } else {
+        state = createDefaultState();
+      }
+      if (!state.selectedDate) state.selectedDate = getTodayISO();
+      applyTheme();
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        if (currentSessionRoll) {
+          const isGoogleKey = String(currentSessionRoll).startsWith('g:');
+          const existingAcc = accountsIndex[currentSessionRoll] || {};
+          const existingPin = existingAcc.pin || '';
+          if (!isGoogleKey) {
+            const rollKey = String(state.profile.rollNo);
+            if (rollKey !== currentSessionRoll) {
+              delete accountsIndex[currentSessionRoll];
+              currentSessionRoll = rollKey;
+              localStorage.setItem(SESSION_KEY, currentSessionRoll);
+            }
+          }
+          accountsIndex[currentSessionRoll] = {
+            name: state.profile.name || '',
+            email: existingAcc.email || state.profile.email || '',
+            rollNo: state.profile.rollNo,
+            pin: existingPin,
+            state
+          };
+          persistAccountsIndex();
+        }
+      } catch (e) {
+        // Storage unavailable
+      }
+    }
+
+    function updateAuthView() {
+      const authScreen = document.getElementById('auth-screen');
+      const appShell = document.getElementById('app-shell');
+      const signedIn = !!currentSessionRoll;
+      authScreen.classList.toggle('hidden', signedIn);
+      appShell.classList.toggle('hidden', !signedIn);
+
+      if (!signedIn) {
+        const isReg = authMode === 'register';
+        document.getElementById('auth-tab-signin').className = isReg
+          ? 'py-2 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition'
+          : 'py-2 rounded-lg text-xs font-bold bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm transition';
+        document.getElementById('auth-tab-register').className = isReg
+          ? 'py-2 rounded-lg text-xs font-bold bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm transition'
+          : 'py-2 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition';
+        document.getElementById('auth-name-wrap').classList.toggle('hidden', !isReg);
+        document.getElementById('auth-submit-label').textContent = isReg ? 'Create Workspace & Enter' : 'Open My Workspace';
+        document.getElementById('auth-pin-hint').textContent = isReg ? '(optional 4-digit lock)' : '(leave blank if none set)';
+
+        const info = getGroupInfo(document.getElementById('auth-roll').value);
+        document.getElementById('auth-group-badge').textContent = `Group ${info.group} · ${info.subGroup}`;
+
+        const keys = Object.keys(accountsIndex);
+        const wrap = document.getElementById('saved-profiles-wrap');
+        const list = document.getElementById('saved-profiles-list');
+        if (keys.length > 0 && !isReg) {
+          wrap.classList.remove('hidden');
+          list.innerHTML = keys.map(k => {
+            const acc = accountsIndex[k];
+            const gi = getGroupInfo(acc.rollNo);
+            const label = acc.name ? `${acc.name.split(' ')[0]} · Roll ${String(acc.rollNo).padStart(2,'0')}` : `Roll ${String(acc.rollNo).padStart(2,'0')} (${gi.subGroup})`;
+            return `<button type="button" data-pick-roll="${acc.rollNo}" class="px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition flex items-center gap-1">
+              ${acc.pin ? '<i data-lucide="lock" class="w-3 h-3 text-indigo-500"></i>' : ''}
+              <span>${label}</span>
+            </button>`;
+          }).join('');
+        } else {
+          wrap.classList.add('hidden');
+        }
+        if (window.lucide) window.lucide.createIcons();
+      }
+    }
+
+    function applyTheme() {
+      const html = document.documentElement;
+      if (state.profile.darkMode) {
+        html.classList.add('dark');
+        html.classList.remove('light');
+      } else {
+        html.classList.remove('dark');
+        html.classList.add('light');
+      }
+    }
+
+    // =========================================================================
+    // 3. HELPER FUNCTIONS (DATES, ROLL/GROUP, POSTING RESOLVER, BUNK MATH)
+    // =========================================================================
+
+    function getGroupInfo(rollNo) {
+      const r = Math.max(1, Math.min(100, parseInt(rollNo, 10) || 1));
+      const found = SUBGROUP_RANGES.find(item => r >= item.min && r <= item.max) || SUBGROUP_RANGES[0];
+      return { rollNo: r, group: found.group, subGroup: found.sub };
+    }
+
+    function formatDisplayDate(iso) {
+      const parts = iso.split('-').map(Number);
+      const d = new Date(parts[0], parts[1] - 1, parts[2]);
+      return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+
+    function getDayName(iso) {
+      const parts = iso.split('-').map(Number);
+      const d = new Date(parts[0], parts[1] - 1, parts[2]);
+      return d.toLocaleDateString('en-IN', { weekday: 'long' });
+    }
+
+    function getDayOfWeek(iso) {
+      const parts = iso.split('-').map(Number);
+      return new Date(parts[0], parts[1] - 1, parts[2]).getDay(); // 0=Sun..6=Sat
+    }
+
+    function shiftDate(iso, deltaDays) {
+      const parts = iso.split('-').map(Number);
+      const d = new Date(parts[0], parts[1] - 1, parts[2]);
+      d.setDate(d.getDate() + deltaDays);
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    function getClinicalPostingForDate(isoDate, subGroup) {
+      const group = subGroup.charAt(0);
+      // 1. Check Minor Roster
+      for (const row of MINOR_ROSTER) {
+        if (isoDate >= row.start && isoDate <= row.end) {
+          for (const dept of ['DR', 'RD', 'AN', 'PS']) {
+            if (row[dept].includes(subGroup)) {
+              return { code: dept, name: SUBJECT_MAP[dept].name, start: row.start, end: row.end, block: 'Allied Specialty' };
+            }
+          }
+        }
+      }
+      // 2. Check Mid-Major Roster
+      for (const row of MID_ROSTER) {
+        if (isoDate >= row.start && isoDate <= row.end) {
+          for (const dept of ['PE', 'OR', 'EN', 'OP']) {
+            if (row[dept].includes(subGroup)) {
+              return { code: dept, name: SUBJECT_MAP[dept].name, start: row.start, end: row.end, block: 'Specialty Rotation' };
+            }
+          }
+        }
+      }
+      // 3. Check Major Roster
+      for (const row of MAJOR_ROSTER) {
+        if (isoDate >= row.start && isoDate <= row.end) {
+          for (const dept of ['IM', 'SU', 'OG']) {
+            if (row[dept].includes(group)) {
+              return { code: dept, name: SUBJECT_MAP[dept].name, start: row.start, end: row.end, block: 'Major Clinical' };
+            }
+          }
+        }
+      }
+      // 4. Check Exam Oriented Clinical Classes
+      for (const row of EXAM_CLINICAL_ROSTER) {
+        if (isoDate >= row.start && isoDate <= row.end) {
+          for (const dept of ['IM', 'SU', 'OG']) {
+            if (row[dept].includes(group)) {
+              return { code: dept, name: `${SUBJECT_MAP[dept].name} (Exam Oriented)`, start: row.start, end: row.end, block: 'Exam Oriented' };
+            }
+          }
+        }
+      }
+      return null;
+    }
+
+    function getPersonalRosterTimeline(subGroup) {
+      const group = subGroup.charAt(0);
+      const list = [];
+      for (const row of MINOR_ROSTER) {
+        for (const dept of ['DR', 'RD', 'AN', 'PS']) {
+          if (row[dept].includes(subGroup)) {
+            list.push({ code: dept, name: SUBJECT_MAP[dept].name, start: row.start, end: row.end, block: 'Allied (2 Wks)' });
+          }
+        }
+      }
+      for (const row of MID_ROSTER) {
+        for (const dept of ['PE', 'OR', 'EN', 'OP']) {
+          if (row[dept].includes(subGroup)) {
+            list.push({ code: dept, name: SUBJECT_MAP[dept].name, start: row.start, end: row.end, block: 'Specialty' });
+          }
+        }
+      }
+      for (const row of MAJOR_ROSTER) {
+        for (const dept of ['IM', 'SU', 'OG']) {
+          if (row[dept].includes(group)) {
+            list.push({ code: dept, name: SUBJECT_MAP[dept].name, start: row.start, end: row.end, block: 'Major Clinical' });
+          }
+        }
+      }
+      for (const row of EXAM_CLINICAL_ROSTER) {
+        for (const dept of ['IM', 'SU', 'OG']) {
+          if (row[dept].includes(group)) {
+            list.push({ code: dept, name: `${SUBJECT_MAP[dept].name} (Exam Oriented)`, start: row.start, end: row.end, block: 'Exam Oriented' });
+          }
+        }
+      }
+      list.sort((a, b) => a.start.localeCompare(b.start));
+      return list;
+    }
+
+    function computeSubjectStats() {
+      const stats = {};
+      for (const s of SUBJECTS) {
+        const b = state.baseline[s.code] || {};
+        stats[s.code] = {
+          theoryPresent: parseInt(b.theoryPresent, 10) || 0,
+          theoryTotal: parseInt(b.theoryTotal, 10) || 0,
+          clinicalPresent: parseInt(b.clinicalPresent, 10) || 0,
+          clinicalTotal: parseInt(b.clinicalTotal, 10) || 0
+        };
+      }
+
+      for (const dateStr of Object.keys(state.logs)) {
+        const dayLog = state.logs[dateStr];
+        if (!dayLog) continue;
+        for (const slotId of Object.keys(dayLog)) {
+          const entry = dayLog[slotId];
+          if (!entry || !entry.status || entry.status === 'cancelled') continue;
+          const code = entry.subject;
+          if (!stats[code]) continue;
+          const isClinical = slotId.endsWith('-cp');
+          if (isClinical) {
+            stats[code].clinicalTotal += 1;
+            if (entry.status === 'present') stats[code].clinicalPresent += 1;
+          } else {
+            stats[code].theoryTotal += 1;
+            if (entry.status === 'present') stats[code].theoryPresent += 1;
+          }
+        }
+      }
+      return stats;
+    }
+
+    function calcBunkInfo(present, total, targetPct) {
+      if (total <= 0) {
+        return { pct: null, status: 'empty', message: 'No classes logged yet', canBunk: 0, mustAttend: 0 };
+      }
+      const pct = (present / total) * 100;
+      const t = targetPct / 100;
+      if (pct >= targetPct) {
+        const canBunk = Math.floor((present - t * total) / t);
+        const status = canBunk >= 2 ? 'safe' : 'borderline';
+        const message = canBunk > 0
+          ? `Can safely skip ${canBunk} next ${canBunk === 1 ? 'class' : 'classes'}`
+          : 'On target — avoid skipping next class';
+        return { pct, status, message, canBunk, mustAttend: 0 };
+      } else {
+        const denom = 1 - t;
+        const mustAttend = denom > 0 ? Math.ceil((t * total - present) / denom) : 0;
+        return {
+          pct,
+          status: 'danger',
+          message: `Attend next ${mustAttend} ${mustAttend === 1 ? 'class' : 'classes'} to hit ${targetPct}%`,
+          canBunk: 0,
+          mustAttend
+        };
+      }
+    }
+
+    function classifySkipPriority(subj, present, total, targetPct, mode) {
+      const bunk = calcBunkInfo(present, total, targetPct);
+      const isLowFreq = mode === 'clinical' ? subj.clinicalWeeks <= 3 : subj.weeklySlots <= 1;
+      const isHighFreq = mode === 'clinical' ? subj.clinicalWeeks >= 10 : subj.weeklySlots >= 5;
+      const dropOnOneMiss = total > 0 ? ((present / total) - (present / (total + 1))) * 100 : null;
+
+      // No classes logged yet: classify by timetable frequency / total hours risk
+      if (total === 0) {
+        if (isLowFreq) {
+          return {
+            tier: 'dont',
+            pill: "Don't Miss",
+            reason: mode === 'clinical'
+              ? `Short ${subj.clinicalWeeks}-wk posting — every day counts`
+              : `Only ${subj.weeklySlots}/wk (${subj.lecture}L hrs) — very little margin`
+          };
+        }
+        if (isHighFreq) {
+          return {
+            tier: 'safe',
+            pill: 'High-Freq Buffer',
+            reason: mode === 'clinical'
+              ? `${subj.clinicalWeeks}-wk major posting — log counts to see exact skips`
+              : `${subj.weeklySlots} classes/wk (${subj.total} hrs) — highest skip flexibility`
+          };
+        }
+        return {
+          tier: 'careful',
+          pill: 'Moderate',
+          reason: mode === 'clinical'
+            ? `${subj.clinicalWeeks}-wk posting — log counts to see exact skips`
+            : `${subj.weeklySlots} classes/wk — limited cushion`
+        };
+      }
+
+      if (bunk.status === 'danger' || bunk.canBunk === 0) {
+        return {
+          tier: 'dont',
+          pill: "Don't Miss",
+          reason: bunk.status === 'danger'
+            ? `${bunk.pct.toFixed(1)}% · Attend next ${bunk.mustAttend} to hit ${targetPct}%`
+            : `${bunk.pct.toFixed(1)}% · 0 skips left (1 miss drops -${dropOnOneMiss.toFixed(1)}%)`
+        };
+      }
+
+      if (isLowFreq && bunk.canBunk <= 2) {
+        return {
+          tier: 'dont',
+          pill: 'Low-Freq Risk',
+          reason: `${bunk.pct.toFixed(1)}% · Only ${bunk.canBunk} skip left (${subj.weeklySlots}/wk, -${dropOnOneMiss.toFixed(1)}%/miss)`
+        };
+      }
+
+      if (bunk.canBunk <= 2) {
+        return {
+          tier: 'careful',
+          pill: `Tight (${bunk.canBunk} left)`,
+          reason: `${bunk.pct.toFixed(1)}% · Max ${bunk.canBunk} safe ${bunk.canBunk === 1 ? 'skip' : 'skips'} (-${dropOnOneMiss.toFixed(1)}%/miss)`
+        };
+      }
+
+      return {
+        tier: 'safe',
+        pill: `Can Skip ${bunk.canBunk}`,
+        reason: `${bunk.pct.toFixed(1)}% · Can safely skip ${bunk.canBunk} ${bunk.canBunk === 1 ? 'class' : 'classes'} (-${dropOnOneMiss.toFixed(1)}%/miss)`
+      };
+    }
+
+    function showToast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.remove('hidden');
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => el.classList.add('hidden'), 2400);
+    }
+
+    // =========================================================================
+    // 4. RENDERING FUNCTIONS
+    // =========================================================================
+
+    let attendanceChartInstance = null;
+
+    function renderAll() {
+      renderHeader();
+      renderTodayView();
+      renderSubjectsView();
+      renderTimetableView();
+      renderExamsView();
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function renderHeader() {
+      const info = getGroupInfo(state.profile.rollNo);
+      const namePrefix = state.profile.name ? `${state.profile.name.split(' ')[0]} · ` : '';
+      document.getElementById('header-roll-badge').textContent = `${namePrefix}Roll ${String(info.rollNo).padStart(2, '0')} · ${info.subGroup}`;
+
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === state.activeTab);
+      });
+      ['today', 'subjects', 'timetable', 'exams'].forEach(tab => {
+        const sec = document.getElementById(`view-${tab}`);
+        if (sec) sec.classList.toggle('hidden', tab !== state.activeTab);
+      });
+    }
+
+    function renderTodayView() {
+      const iso = state.selectedDate;
+      const dow = getDayOfWeek(iso);
+      const info = getGroupInfo(state.profile.rollNo);
+      const posting = getClinicalPostingForDate(iso, info.subGroup);
+
+      document.getElementById('today-day-label').textContent = getDayName(iso);
+      document.getElementById('today-date-heading').textContent = formatDisplayDate(iso);
+      document.getElementById('date-picker').value = iso;
+      document.getElementById('posting-subgroup-pill').textContent = `Group ${info.group} · ${info.subGroup}`;
+
+      if (posting) {
+        document.getElementById('posting-dept-name').textContent = posting.name;
+        document.getElementById('posting-date-range').textContent = `${formatDisplayDate(posting.start)} – ${formatDisplayDate(posting.end)} · ${posting.block}`;
+      } else {
+        document.getElementById('posting-dept-name').textContent = 'No Active Clinical Posting Scheduled';
+        document.getElementById('posting-date-range').textContent = 'Exam window, vacation, or outside 2026–2027 roster dates';
+      }
+
+      // Live KPI summary
+      const stats = computeSubjectStats();
+      let tP = 0, tT = 0, cP = 0, cT = 0;
+      for (const code of Object.keys(stats)) {
+        tP += stats[code].theoryPresent;
+        tT += stats[code].theoryTotal;
+        cP += stats[code].clinicalPresent;
+        cT += stats[code].clinicalTotal;
+      }
+
+      document.getElementById('kpi-theory-target').textContent = state.profile.theoryTarget;
+      document.getElementById('kpi-clinical-target').textContent = state.profile.clinicalTarget;
+
+      const tPctEl = document.getElementById('kpi-theory-pct');
+      if (tT > 0) {
+        const p = (tP / tT) * 100;
+        tPctEl.textContent = `${p.toFixed(1)}%`;
+        tPctEl.className = `text-2xl font-bold mt-0.5 ${p >= state.profile.theoryTarget ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`;
+      } else {
+        tPctEl.textContent = '—';
+        tPctEl.className = 'text-2xl font-bold mt-0.5 text-slate-400';
+      }
+      document.getElementById('kpi-theory-counts').textContent = `${tP} / ${tT} classes`;
+
+      const cPctEl = document.getElementById('kpi-clinical-pct');
+      if (cT > 0) {
+        const p = (cP / cT) * 100;
+        cPctEl.textContent = `${p.toFixed(1)}%`;
+        cPctEl.className = `text-2xl font-bold mt-0.5 ${p >= state.profile.clinicalTarget ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`;
+      } else {
+        cPctEl.textContent = '—';
+        cPctEl.className = 'text-2xl font-bold mt-0.5 text-slate-400';
+      }
+      document.getElementById('kpi-clinical-counts').textContent = `${cP} / ${cT} postings`;
+
+      // Next Exam countdown
+      const todayIso = getTodayISO();
+      const upcoming = EXAMS.find(e => e.start >= todayIso);
+      if (upcoming) {
+        const diffDays = Math.ceil((new Date(upcoming.start) - new Date(todayIso)) / 86400000);
+        document.getElementById('next-exam-mini').textContent = `Next: ${upcoming.name}`;
+        document.getElementById('next-exam-days').textContent = diffDays === 0 ? 'Today' : `In ${diffDays} days`;
+      } else {
+        document.getElementById('next-exam-mini').textContent = 'All 2026–27 exams completed';
+        document.getElementById('next-exam-days').textContent = 'Done';
+      }
+
+      // Daily Slots
+      const container = document.getElementById('today-slots-container');
+      const bulkActions = document.getElementById('day-bulk-actions');
+
+      if (dow === 0) {
+        bulkActions.classList.add('hidden');
+        document.getElementById('day-status-summary').textContent = 'Sunday — Weekly holiday.';
+        container.innerHTML = `
+          <div class="rounded-xl border border-dashed border-slate-300 dark:border-slate-700 p-8 text-center space-y-2">
+            <div class="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mx-auto">
+              <i data-lucide="coffee" class="w-6 h-6"></i>
+            </div>
+            <p class="font-bold text-sm">Sunday — No Scheduled Classes</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Use the arrows above to jump to Monday or log past attendance from earlier this week.</p>
+          </div>`;
+        return;
+      }
+
+      bulkActions.classList.remove('hidden');
+      const slots = MASTER_TIMETABLE[dow] || [];
+      const dayLog = state.logs[iso] || {};
+
+      let markedCount = 0;
+      slots.forEach(s => { if (dayLog[s.id] && dayLog[s.id].status) markedCount++; });
+      document.getElementById('day-status-summary').textContent = `${markedCount} of ${slots.length} slots logged for ${formatDisplayDate(iso)}`;
+
+      container.innerHTML = slots.map(slot => {
+        const saved = dayLog[slot.id] || {};
+        const isClinical = slot.type === 'clinical';
+        let activeSubj = saved.subject || (isClinical ? (posting ? posting.code : 'IM') : slot.subject);
+        const subjObj = SUBJECT_MAP[activeSubj] || { name: activeSubj, color: '#6366f1' };
+        const st = stats[activeSubj] || { theoryPresent: 0, theoryTotal: 0, clinicalPresent: 0, clinicalTotal: 0 };
+        const pCount = isClinical ? st.clinicalPresent : st.theoryPresent;
+        const tCount = isClinical ? st.clinicalTotal : st.theoryTotal;
+        const target = isClinical ? state.profile.clinicalTarget : state.profile.theoryTarget;
+        const bunk = calcBunkInfo(pCount, tCount, target);
+
+        const titleText = isClinical
+          ? (posting ? `Clinical Posting — ${posting.name}` : 'Clinical Posting (General)')
+          : (slot.altSubject ? `${subjObj.name} (${activeSubj})` : slot.label);
+        const advice = classifySkipPriority(subjObj, pCount, tCount, target, isClinical ? 'clinical' : 'theory');
+        const adviceClass = advice.tier === 'dont'
+          ? 'bg-rose-100 text-rose-700 dark:bg-rose-950/70 dark:text-rose-300'
+          : advice.tier === 'careful'
+            ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/70 dark:text-amber-300'
+            : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/70 dark:text-emerald-300';
+
+        const status = saved.status || '';
+        const altToggleHtml = slot.altSubject ? `
+          <button data-swap-slot="${slot.id}" data-sub-a="${slot.subject}" data-sub-b="${slot.altSubject}" class="ml-2 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 hover:bg-indigo-100 dark:hover:bg-indigo-900 text-indigo-700 dark:text-indigo-300 border border-slate-200 dark:border-slate-700 transition">
+            Switch to ${activeSubj === slot.subject ? slot.altSubject : slot.subject}
+          </button>` : '';
+
+        return `
+          <div class="rounded-xl border border-slate-200 dark:border-slate-800 p-3.5 sm:p-4 bg-slate-50/70 dark:bg-slate-800/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="space-y-1 min-w-0">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="text-xs font-bold px-2 py-0.5 rounded-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">${slot.time}</span>
+                <span class="text-[11px] font-semibold px-2 py-0.5 rounded-md ${isClinical ? 'bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300' : 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300'}">${isClinical ? 'Clinical (3 hrs)' : 'Theory / SGD'}</span>
+                <span class="text-[11px] font-bold px-2 py-0.5 rounded-md ${adviceClass}">${advice.pill}</span>
+                ${altToggleHtml}
+              </div>
+              <p class="font-bold text-sm sm:text-base text-slate-900 dark:text-white truncate">${titleText}</p>
+              <p class="text-xs text-slate-500 dark:text-slate-400">
+                ${bunk.pct !== null ? `<span class="font-semibold ${bunk.status === 'danger' ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}">${bunk.pct.toFixed(1)}%</span> (${pCount}/${tCount}) · ${bunk.message}` : 'No classes logged yet for this subject'}
+              </p>
+            </div>
+            <div class="flex items-center gap-1.5 shrink-0">
+              <button data-mark-slot="${slot.id}" data-mark-subj="${activeSubj}" data-mark-status="present" class="px-3 py-2 rounded-xl text-xs font-semibold border transition ${status === 'present' ? 'status-pill-present' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 hover:border-emerald-400 text-slate-700 dark:text-slate-200'}">
+                Present
+              </button>
+              <button data-mark-slot="${slot.id}" data-mark-subj="${activeSubj}" data-mark-status="absent" class="px-3 py-2 rounded-xl text-xs font-semibold border transition ${status === 'absent' ? 'status-pill-absent' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 hover:border-rose-400 text-slate-700 dark:text-slate-200'}">
+                Absent
+              </button>
+              <button data-mark-slot="${slot.id}" data-mark-subj="${activeSubj}" data-mark-status="cancelled" class="px-3 py-2 rounded-xl text-xs font-semibold border transition ${status === 'cancelled' ? 'status-pill-cancelled' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 hover:border-slate-400 text-slate-500 dark:text-slate-400'}">
+                Holiday
+              </button>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    function renderSubjectsView() {
+      const mode = state.subjectFilter;
+      const target = mode === 'clinical' ? state.profile.clinicalTarget : state.profile.theoryTarget;
+      const stats = computeSubjectStats();
+
+      document.querySelectorAll('.subj-filter-btn').forEach(btn => {
+        const active = btn.dataset.subjFilter === mode;
+        btn.className = `subj-filter-btn px-3.5 py-1.5 rounded-lg text-sm font-semibold transition ${active ? 'bg-indigo-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'}`;
+      });
+
+      document.getElementById('chart-title').textContent = mode === 'clinical' ? 'Clinical Posting Attendance Overview' : 'Theory & Lecture Attendance Overview';
+      document.getElementById('chart-target-badge').textContent = `Target: ${target}%`;
+
+      const filteredSubjects = mode === 'clinical' ? SUBJECTS.filter(s => s.clinicalWeeks > 0) : SUBJECTS;
+
+      // Populate Skip Priority Advisor (Can Miss vs Can't Miss)
+      document.getElementById('advisor-mode-badge').textContent = mode === 'clinical' ? 'Clinical Posting Advisor' : 'Theory & Lecture Advisor';
+      const buckets = { dont: [], careful: [], safe: [] };
+      filteredSubjects.forEach(s => {
+        const st = stats[s.code];
+        const p = mode === 'clinical' ? st.clinicalPresent : st.theoryPresent;
+        const t = mode === 'clinical' ? st.clinicalTotal : st.theoryTotal;
+        const adv = classifySkipPriority(s, p, t, target, mode);
+        buckets[adv.tier].push({ subj: s, adv });
+      });
+
+      const renderBucket = (listId, countId, items, emptyText) => {
+        document.getElementById(countId).textContent = items.length;
+        const el = document.getElementById(listId);
+        if (items.length === 0) {
+          el.innerHTML = `<p class="text-[11px] text-slate-400 italic">${emptyText}</p>`;
+          return;
+        }
+        el.innerHTML = items.map(({ subj, adv }) => `
+          <div class="p-2 rounded-lg bg-white/80 dark:bg-slate-900/70 border border-slate-200/70 dark:border-slate-800">
+            <div class="flex items-center justify-between gap-2">
+              <span class="font-bold text-slate-900 dark:text-white truncate">${subj.name}</span>
+              <span class="text-[10px] font-bold text-slate-500 shrink-0">${subj.code}</span>
+            </div>
+            <p class="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5">${adv.reason}</p>
+          </div>`).join('');
+      };
+
+      renderBucket('advisor-dont-list', 'advisor-dont-count', buckets.dont, 'None in high-risk zone!');
+      renderBucket('advisor-careful-list', 'advisor-careful-count', buckets.careful, 'No borderline subjects.');
+      renderBucket('advisor-safe-list', 'advisor-safe-count', buckets.safe, 'Fill past classes to unlock skip buffer.');
+
+      // Render Grid
+      const grid = document.getElementById('subjects-grid');
+      grid.innerHTML = filteredSubjects.map(s => {
+        const st = stats[s.code];
+        const p = mode === 'clinical' ? st.clinicalPresent : st.theoryPresent;
+        const t = mode === 'clinical' ? st.clinicalTotal : st.theoryTotal;
+        const bunk = calcBunkInfo(p, t, target);
+
+        const badgeClass = bunk.status === 'safe'
+          ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'
+          : bunk.status === 'borderline'
+            ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border-amber-200 dark:border-amber-800'
+            : bunk.status === 'danger'
+              ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border-rose-200 dark:border-rose-800'
+              : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border-slate-200 dark:border-slate-700';
+
+        const barColor = bunk.status === 'danger' ? 'bg-rose-500' : bunk.status === 'borderline' ? 'bg-amber-500' : 'bg-emerald-500';
+        const barWidth = bunk.pct !== null ? Math.min(100, Math.round(bunk.pct)) : 0;
+
+        return `
+          <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 shadow-sm flex flex-col justify-between gap-3">
+            <div class="flex items-start justify-between gap-2">
+              <div class="min-w-0">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color:${s.color}"></span>
+                  <h3 class="font-bold text-sm truncate">${s.name}</h3>
+                </div>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                  ${mode === 'clinical' ? `${s.clinicalWeeks} Weeks Posting` : `${s.total} Total Hrs (${s.lecture}L · ${s.sgl}SGL · ${s.sdl}SDL)`}
+                </p>
+              </div>
+              <span class="px-2 py-0.5 rounded-lg text-xs font-bold border shrink-0 ${badgeClass}">
+                ${bunk.pct !== null ? `${bunk.pct.toFixed(1)}%` : '—'}
+              </span>
+            </div>
+
+            <div class="space-y-1.5">
+              <div class="w-full h-2 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                <div class="h-full rounded-full ${barColor} transition-all duration-300" style="width:${barWidth}%"></div>
+              </div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-semibold text-slate-700 dark:text-slate-300">${p} / ${t} attended</span>
+                <span class="text-[11px] text-slate-500 dark:text-slate-400">${s.code}</span>
+              </div>
+              <p class="text-xs font-medium ${bunk.status === 'danger' ? 'text-rose-600 dark:text-rose-400' : bunk.status === 'safe' ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400'}">
+                ${bunk.message}
+              </p>
+            </div>
+
+            <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
+              <span class="text-[11px] text-slate-400">Quick adjust prior:</span>
+              <div class="flex items-center gap-1.5">
+                <button data-quick-adj="${s.code}" data-adj-mode="${mode}" data-adj-type="present" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 hover:bg-emerald-100 transition">+1 P</button>
+                <button data-quick-adj="${s.code}" data-adj-mode="${mode}" data-adj-type="absent" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 hover:bg-rose-100 transition">+1 A</button>
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+
+      // Render Chart.js
+      const ctx = document.getElementById('attendanceChart');
+      if (!ctx || !window.Chart) return;
+      if (attendanceChartInstance) attendanceChartInstance.destroy();
+
+      const labels = filteredSubjects.map(s => s.code);
+      const values = filteredSubjects.map(s => {
+        const st = stats[s.code];
+        const p = mode === 'clinical' ? st.clinicalPresent : st.theoryPresent;
+        const t = mode === 'clinical' ? st.clinicalTotal : st.theoryTotal;
+        return t > 0 ? Number(((p / t) * 100).toFixed(1)) : 0;
+      });
+      const colors = values.map((v, i) => {
+        const st = stats[filteredSubjects[i].code];
+        const t = mode === 'clinical' ? st.clinicalTotal : st.theoryTotal;
+        if (t === 0) return 'rgba(148, 163, 184, 0.35)';
+        return v >= target ? 'rgba(16, 185, 129, 0.85)' : 'rgba(244, 63, 94, 0.85)';
+      });
+
+      const isDark = state.profile.darkMode;
+      const tickColor = isDark ? '#94a3b8' : '#475569';
+      const gridColor = isDark ? 'rgba(148, 163, 184, 0.12)' : 'rgba(148, 163, 184, 0.2)';
+
+      attendanceChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Attendance %',
+            data: values,
+            backgroundColor: colors,
+            borderRadius: 6,
+            maxBarThickness: 36
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (c) => {
+                  const s = filteredSubjects[c.dataIndex];
+                  const st = stats[s.code];
+                  const p = mode === 'clinical' ? st.clinicalPresent : st.theoryPresent;
+                  const t = mode === 'clinical' ? st.clinicalTotal : st.theoryTotal;
+                  return t > 0 ? `${s.name}: ${c.raw}% (${p}/${t})` : `${s.name}: No classes logged yet`;
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              min: 0,
+              max: 100,
+              ticks: { color: tickColor, callback: v => `${v}%` },
+              grid: { color: gridColor }
+            },
+            x: {
+              ticks: { color: tickColor },
+              grid: { display: false }
+            }
+          }
+        }
+      });
+    }
+
+    function renderTimetableView() {
+      const info = getGroupInfo(state.profile.rollNo);
+      const todayDow = getDayOfWeek(getTodayISO());
+      const activeSub = state.rosterPreviewSub || info.subGroup;
+
+      // Master Timetable
+      const days = [
+        { idx: 1, name: 'Monday' },
+        { idx: 2, name: 'Tuesday' },
+        { idx: 3, name: 'Wednesday' },
+        { idx: 4, name: 'Thursday' },
+        { idx: 5, name: 'Friday' },
+        { idx: 6, name: 'Saturday' }
+      ];
+      const tbody = document.getElementById('master-timetable-body');
+      tbody.innerHTML = days.map(d => {
+        const s = MASTER_TIMETABLE[d.idx];
+        const isToday = d.idx === todayDow;
+        return `
+          <tr class="${isToday ? 'bg-indigo-50/70 dark:bg-indigo-950/30' : 'hover:bg-slate-50 dark:hover:bg-slate-800/40'}">
+            <td class="p-2.5 font-bold whitespace-nowrap">${d.name} ${isToday ? '<span class="ml-1 text-[10px] px-1.5 py-0.5 rounded bg-indigo-600 text-white">Today</span>' : ''}</td>
+            <td class="p-2.5">${s[0].label}</td>
+            <td class="p-2.5 font-semibold text-indigo-700 dark:text-indigo-300">Clinical Posting</td>
+            <td class="p-2.5 text-slate-400">Lunch</td>
+            <td class="p-2.5">${s[2].label}</td>
+            <td class="p-2.5">${s[3].label}</td>
+            <td class="p-2.5">${s[4].label}</td>
+          </tr>`;
+      }).join('');
+
+      // Subgroup preview selector
+      const sel = document.getElementById('roster-subgroup-select');
+      if (sel.options.length === 0) {
+        SUBGROUP_RANGES.forEach(r => {
+          const opt = document.createElement('option');
+          opt.value = r.sub;
+          opt.textContent = `${r.sub} (Roll ${String(r.min).padStart(2,'0')}–${String(r.max).padStart(2,'0')})`;
+          sel.appendChild(opt);
+        });
+      }
+      sel.value = activeSub;
+      document.getElementById('roster-subtitle').textContent = `Showing complete 2026–2028 clinical rotation timeline for Sub-Group ${activeSub} (Group ${activeSub.charAt(0)})`;
+
+      // Personal Roster Timeline
+      const timeline = getPersonalRosterTimeline(activeSub);
+      const todayIso = getTodayISO();
+      const listEl = document.getElementById('personal-roster-list');
+      listEl.innerHTML = timeline.map(item => {
+        const isCurrent = todayIso >= item.start && todayIso <= item.end;
+        const isPast = todayIso > item.end;
+        return `
+          <div class="rounded-xl p-3.5 border ${isCurrent ? 'border-indigo-500 bg-indigo-50/60 dark:bg-indigo-950/40' : 'border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/30'} flex items-center justify-between gap-3">
+            <div class="min-w-0">
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-sm truncate">${item.name}</span>
+                ${isCurrent ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-600 text-white">ACTIVE</span>' : ''}
+              </div>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">${formatDisplayDate(item.start)} – ${formatDisplayDate(item.end)}</p>
+            </div>
+            <span class="text-[11px] font-semibold px-2 py-1 rounded-lg shrink-0 ${isPast ? 'bg-slate-200 dark:bg-slate-800 text-slate-500' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300'}">${item.block}</span>
+          </div>`;
+      }).join('');
+
+      // Group Mapping Reference
+      const groups = ['A', 'B', 'C', 'D', 'E', 'F'];
+      document.getElementById('group-mapping-grid').innerHTML = groups.map(g => {
+        const subs = SUBGROUP_RANGES.filter(r => r.group === g);
+        const minR = subs[0].min, maxR = subs[subs.length - 1].max;
+        const detail = subs.map(s => `${s.sub}: ${String(s.min).padStart(2,'0')}–${String(s.max).padStart(2,'0')}`).join(' · ');
+        const isMine = g === info.group;
+        return `
+          <div class="p-3 rounded-xl border ${isMine ? 'border-indigo-400 bg-indigo-50/50 dark:bg-indigo-950/40' : 'border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/30'}">
+            <p class="font-bold text-slate-900 dark:text-white">Group ${g} (Roll ${String(minR).padStart(2,'0')}–${String(maxR).padStart(2,'0')})</p>
+            <p class="text-slate-500 dark:text-slate-400 mt-0.5">${detail}</p>
+          </div>`;
+      }).join('');
+    }
+
+    function renderExamsView() {
+      const todayIso = getTodayISO();
+
+      // Exams
+      document.getElementById('exams-list').innerHTML = EXAMS.map(ex => {
+        const diff = Math.ceil((new Date(ex.start) - new Date(todayIso)) / 86400000);
+        const badge = diff < 0
+          ? '<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-200 dark:bg-slate-800 text-slate-500">Completed</span>'
+          : diff === 0
+            ? '<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-rose-600 text-white">Starts Today</span>'
+            : `<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">In ${diff} days</span>`;
+        return `
+          <div class="rounded-xl border border-slate-200 dark:border-slate-800 p-4 bg-slate-50/60 dark:bg-slate-800/30 space-y-2">
+            <div class="flex items-start justify-between gap-2">
+              <h3 class="font-bold text-sm">${ex.name}</h3>
+              ${badge}
+            </div>
+            <p class="text-xs font-semibold text-indigo-600 dark:text-indigo-400">${formatDisplayDate(ex.start)} – ${formatDisplayDate(ex.end)}</p>
+            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">${ex.subjects}</p>
+          </div>`;
+      }).join('');
+
+      // AETCOM Checklist
+      const aDoneCount = AETCOM_MODULES.filter(m => state.aetcomDone[m.id]).length;
+      document.getElementById('aetcom-progress-badge').textContent = `${aDoneCount} / ${AETCOM_MODULES.length}`;
+      document.getElementById('aetcom-list').innerHTML = AETCOM_MODULES.map(m => {
+        const checked = !!state.aetcomDone[m.id];
+        return `
+          <label class="flex items-start gap-3 p-3 rounded-xl border ${checked ? 'border-emerald-200 dark:border-emerald-900 bg-emerald-50/40 dark:bg-emerald-950/20' : 'border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/30'} cursor-pointer transition">
+            <input type="checkbox" data-aetcom-id="${m.id}" ${checked ? 'checked' : ''} class="mt-0.5 w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500" />
+            <div class="min-w-0 space-y-0.5">
+              <p class="text-xs font-bold ${checked ? 'line-through text-slate-400' : 'text-slate-900 dark:text-white'}">${m.title}</p>
+              <p class="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400">${m.hours} · ${m.dept}</p>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-snug">${m.topic}</p>
+            </div>
+          </label>`;
+      }).join('');
+
+      // Pandemic Checklist
+      const pDoneCount = PANDEMIC_MODULES.filter(m => state.pandemicDone[m.id]).length;
+      document.getElementById('pandemic-progress-badge').textContent = `${pDoneCount} / ${PANDEMIC_MODULES.length}`;
+      document.getElementById('pandemic-list').innerHTML = PANDEMIC_MODULES.map(m => {
+        const checked = !!state.pandemicDone[m.id];
+        return `
+          <label class="flex items-start gap-3 p-3 rounded-xl border ${checked ? 'border-emerald-200 dark:border-emerald-900 bg-emerald-50/40 dark:bg-emerald-950/20' : 'border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/30'} cursor-pointer transition">
+            <input type="checkbox" data-pandemic-id="${m.id}" ${checked ? 'checked' : ''} class="mt-0.5 w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500" />
+            <div class="min-w-0 space-y-0.5">
+              <p class="text-xs font-bold ${checked ? 'line-through text-slate-400' : 'text-slate-900 dark:text-white'}">${m.title}</p>
+              <p class="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">${m.hours} · ${m.dept}</p>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">${m.topic}</p>
+            </div>
+          </label>`;
+      }).join('');
+
+      // Curriculum Hours Table
+      document.getElementById('curriculum-hours-body').innerHTML = SUBJECTS.map(s => `
+        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+          <td class="p-2.5 font-semibold">${s.name}</td>
+          <td class="p-2.5 text-right">${s.lecture}</td>
+          <td class="p-2.5 text-right">${s.sgl || '—'}</td>
+          <td class="p-2.5 text-right">${s.sdl || '—'}</td>
+          <td class="p-2.5 text-right font-bold">${s.total}</td>
+          <td class="p-2.5 text-right">${s.clinicalWeeks ? `${s.clinicalWeeks} Weeks` : '—'}</td>
+        </tr>`).join('');
+    }
+
+    // =========================================================================
+    // 5. MODALS & SIMULATOR
+    // =========================================================================
+
+    function openModal(id) {
+      document.getElementById(id).classList.remove('hidden');
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    function openSettingsModal() {
+      document.getElementById('input-student-name').value = state.profile.name || '';
+      document.getElementById('input-roll-no').value = state.profile.rollNo;
+      document.getElementById('input-theory-target').value = state.profile.theoryTarget;
+      document.getElementById('input-clinical-target').value = state.profile.clinicalTarget;
+      updateSettingsGroupPreview();
+      openModal('settings-modal');
+    }
+
+    function updateSettingsGroupPreview() {
+      const info = getGroupInfo(document.getElementById('input-roll-no').value);
+      document.getElementById('settings-group-preview').textContent = `Group ${info.group} · Sub-Group ${info.subGroup}`;
+    }
+
+    function openBaselineModal() {
+      const container = document.getElementById('baseline-rows');
+      container.innerHTML = SUBJECTS.map(s => {
+        const b = state.baseline[s.code] || { theoryPresent: 0, theoryTotal: 0, clinicalPresent: 0, clinicalTotal: 0 };
+        return `
+          <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+            <div class="sm:col-span-4 font-bold text-xs">${s.name} (${s.code})</div>
+            <div class="sm:col-span-4 flex items-center gap-1.5">
+              <span class="text-[11px] text-slate-500 w-12">Theory:</span>
+              <input type="number" min="0" data-base-code="${s.code}" data-base-field="theoryPresent" value="${b.theoryPresent || 0}" class="w-16 px-2 py-1 text-xs rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900" placeholder="P" />
+              <span class="text-xs text-slate-400">/</span>
+              <input type="number" min="0" data-base-code="${s.code}" data-base-field="theoryTotal" value="${b.theoryTotal || 0}" class="w-16 px-2 py-1 text-xs rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900" placeholder="Total" />
+            </div>
+            <div class="sm:col-span-4 flex items-center gap-1.5">
+              ${s.clinicalWeeks > 0 ? `
+                <span class="text-[11px] text-slate-500 w-12">Clinical:</span>
+                <input type="number" min="0" data-base-code="${s.code}" data-base-field="clinicalPresent" value="${b.clinicalPresent || 0}" class="w-16 px-2 py-1 text-xs rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900" placeholder="P" />
+                <span class="text-xs text-slate-400">/</span>
+                <input type="number" min="0" data-base-code="${s.code}" data-base-field="clinicalTotal" value="${b.clinicalTotal || 0}" class="w-16 px-2 py-1 text-xs rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900" placeholder="Total" />
+              ` : '<span class="text-[11px] text-slate-400">No clinical posting</span>'}
+            </div>
+          </div>`;
+      }).join('');
+      openModal('baseline-modal');
+    }
+
+    function openBackfillModal() {
+      const todayIso = getTodayISO();
+      const yesterdayIso = shiftDate(todayIso, -1);
+      const startInput = document.getElementById('backfill-start');
+      const endInput = document.getElementById('backfill-end');
+      if (!startInput.value) startInput.value = '2026-10-10';
+      endInput.value = yesterdayIso >= '2026-10-10' ? yesterdayIso : todayIso;
+      renderBackfillDaysList();
+      openModal('backfill-modal');
+    }
+
+    function renderBackfillDaysList() {
+      const todayIso = getTodayISO();
+      const sessionStart = '2026-10-10';
+      const listEl = document.getElementById('backfill-days-list');
+      const days = [];
+      let cur = todayIso;
+      let guard = 0;
+      while (cur >= sessionStart && guard < 120) {
+        const dow = getDayOfWeek(cur);
+        if (dow !== 0) {
+          const totalSlots = (MASTER_TIMETABLE[dow] || []).length;
+          const dayLog = state.logs[cur] || {};
+          let marked = 0, present = 0;
+          Object.values(dayLog).forEach(v => {
+            if (v && v.status) {
+              marked++;
+              if (v.status === 'present') present++;
+            }
+          });
+          days.push({ iso: cur, dow, totalSlots, marked, present });
+        }
+        cur = shiftDate(cur, -1);
+        guard++;
+      }
+
+      const filledDays = days.filter(d => d.marked === d.totalSlots).length;
+      document.getElementById('backfill-days-summary').textContent = `${filledDays} / ${days.length} past working days fully logged`;
+
+      if (days.length === 0) {
+        listEl.innerHTML = '<p class="text-xs text-slate-400">No working days since 10 Oct 2026 yet.</p>';
+        return;
+      }
+
+      listEl.innerHTML = days.map(d => {
+        const statusBadge = d.marked === 0
+          ? '<span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400">Unmarked</span>'
+          : d.marked === d.totalSlots
+            ? `<span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">${d.present}/${d.totalSlots} Present</span>`
+            : `<span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300">${d.marked}/${d.totalSlots} Logged</span>`;
+        return `
+          <button data-jump-past-day="${d.iso}" class="text-left p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40 hover:border-indigo-400 transition flex items-center justify-between gap-2">
+            <div>
+              <p class="text-xs font-bold text-slate-900 dark:text-white">${formatDisplayDate(d.iso)}</p>
+              <p class="text-[11px] text-slate-500">${getDayName(d.iso)}</p>
+            </div>
+            ${statusBadge}
+          </button>`;
+      }).join('');
+    }
+
+    function applyBackfillRange(status) {
+      const start = document.getElementById('backfill-start').value;
+      const end = document.getElementById('backfill-end').value;
+      const scope = document.getElementById('backfill-scope').value;
+      if (!start || !end || end < start) {
+        showToast('Please select a valid date range');
+        return;
+      }
+      const info = getGroupInfo(state.profile.rollNo);
+      let cur = start;
+      let guard = 0;
+      let updatedSlots = 0;
+      let workingDays = 0;
+
+      while (cur <= end && guard < 180) {
+        const dow = getDayOfWeek(cur);
+        if (dow !== 0) {
+          workingDays++;
+          const slots = MASTER_TIMETABLE[dow] || [];
+          const posting = getClinicalPostingForDate(cur, info.subGroup);
+          if (!state.logs[cur]) state.logs[cur] = {};
+          slots.forEach(slot => {
+            const existing = state.logs[cur][slot.id];
+            if (scope === 'unmarked' && existing && existing.status) return;
+            const subj = (existing && existing.subject) || (slot.type === 'clinical' ? (posting ? posting.code : 'IM') : slot.subject);
+            state.logs[cur][slot.id] = { status, subject: subj };
+            updatedSlots++;
+          });
+        }
+        cur = shiftDate(cur, 1);
+        guard++;
+      }
+
+      saveState();
+      renderAll();
+      renderBackfillDaysList();
+      const label = status === 'present' ? 'Present' : status === 'absent' ? 'Absent' : 'Holiday';
+      showToast(`Marked ${updatedSlots} slots (${workingDays} days) as ${label}`);
+    }
+
+    function openLeaveSimulator() {
+      const start = shiftDate(getTodayISO(), 1);
+      const end = shiftDate(getTodayISO(), 3);
+      document.getElementById('leave-start-date').value = start;
+      document.getElementById('leave-end-date').value = end;
+      document.getElementById('leave-sim-results').innerHTML = '<p class="text-slate-500 dark:text-slate-400">Select dates above and click Calculate Impact.</p>';
+      openModal('leave-modal');
+    }
+
+    function runLeaveSimulation() {
+      const start = document.getElementById('leave-start-date').value;
+      const end = document.getElementById('leave-end-date').value;
+      const out = document.getElementById('leave-sim-results');
+      if (!start || !end || end < start) {
+        out.innerHTML = '<p class="text-rose-600 font-semibold">Please pick a valid date range (End date must be on or after Start date).</p>';
+        return;
+      }
+
+      const info = getGroupInfo(state.profile.rollNo);
+      const stats = computeSubjectStats();
+      const missedTheory = {};
+      const missedClinical = {};
+      let workingDays = 0;
+
+      let cur = start;
+      let guard = 0;
+      while (cur <= end && guard < 90) {
+        const dow = getDayOfWeek(cur);
+        if (dow !== 0) {
+          workingDays++;
+          const slots = MASTER_TIMETABLE[dow] || [];
+          const posting = getClinicalPostingForDate(cur, info.subGroup);
+          slots.forEach(s => {
+            if (s.type === 'clinical') {
+              const code = posting ? posting.code : 'IM';
+              missedClinical[code] = (missedClinical[code] || 0) + 1;
+            } else {
+              missedTheory[s.subject] = (missedTheory[s.subject] || 0) + 1;
+            }
+          });
+        }
+        cur = shiftDate(cur, 1);
+        guard++;
+      }
+
+      if (workingDays === 0) {
+        out.innerHTML = '<p class="text-emerald-600 font-semibold">No working days in this range (Sundays only) — zero attendance impact!</p>';
+        return;
+      }
+
+      const rows = [];
+      for (const code of Object.keys(missedTheory)) {
+        const m = missedTheory[code];
+        const curP = stats[code].theoryPresent;
+        const curT = stats[code].theoryTotal;
+        const before = curT > 0 ? `${((curP / curT) * 100).toFixed(1)}%` : '—';
+        const afterPct = ((curP / (curT + m)) * 100);
+        const safe = afterPct >= state.profile.theoryTarget;
+        rows.push(`
+          <div class="flex items-center justify-between p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
+            <div>
+              <p class="font-bold">${SUBJECT_MAP[code].name} <span class="text-slate-400 font-normal">(Theory)</span></p>
+              <p class="text-[11px] text-slate-500">-${m} ${m === 1 ? 'class' : 'classes'}</p>
+            </div>
+            <div class="text-right">
+              <span class="text-slate-400">${before} → </span>
+              <span class="font-bold ${safe ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}">${afterPct.toFixed(1)}%</span>
+            </div>
+          </div>`);
+      }
+      for (const code of Object.keys(missedClinical)) {
+        const m = missedClinical[code];
+        const curP = stats[code].clinicalPresent;
+        const curT = stats[code].clinicalTotal;
+        const before = curT > 0 ? `${((curP / curT) * 100).toFixed(1)}%` : '—';
+        const afterPct = ((curP / (curT + m)) * 100);
+        const safe = afterPct >= state.profile.clinicalTarget;
+        rows.push(`
+          <div class="flex items-center justify-between p-2.5 rounded-xl border border-sky-200 dark:border-sky-900 bg-sky-50/60 dark:bg-sky-950/30">
+            <div>
+              <p class="font-bold">${SUBJECT_MAP[code].name} <span class="text-sky-600 dark:text-sky-400 font-normal">(Clinical Posting)</span></p>
+              <p class="text-[11px] text-slate-500">-${m} ${m === 1 ? 'posting' : 'postings'}</p>
+            </div>
+            <div class="text-right">
+              <span class="text-slate-400">${before} → </span>
+              <span class="font-bold ${safe ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}">${afterPct.toFixed(1)}%</span>
+            </div>
+          </div>`);
+      }
+
+      out.innerHTML = `<p class="font-semibold text-slate-700 dark:text-slate-300">Impact across ${workingDays} working ${workingDays === 1 ? 'day' : 'days'}:</p>` + rows.join('');
+    }
+
+    // =========================================================================
+    // 6. EVENT LISTENERS
+    // =========================================================================
+
+    function bindEvents() {
+      // Tab switching
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.activeTab = btn.dataset.tab;
+          saveState();
+          renderAll();
+        });
+      });
+
+      // Google Sign-In Client ID setup drawer
+      document.getElementById('google-setup-btn').addEventListener('click', () => {
+        const box = document.getElementById('google-config-box');
+        box.classList.toggle('hidden');
+        const inp = document.getElementById('google-client-id-input');
+        inp.value = getGoogleClientId();
+        if (!box.classList.contains('hidden')) inp.focus();
+      });
+      document.getElementById('save-google-client-id-btn').addEventListener('click', () => {
+        const val = document.getElementById('google-client-id-input').value.trim();
+        try {
+          if (val) localStorage.setItem(GOOGLE_CID_KEY, val);
+          else localStorage.removeItem(GOOGLE_CID_KEY);
+        } catch (e) {}
+        initGoogleSignIn();
+        showToast(val ? 'Google Client ID saved — official button enabled' : 'Google Client ID cleared');
+      });
+
+      // Auth screen bindings
+      document.getElementById('auth-theme-toggle-btn').addEventListener('click', () => {
+        state.profile.darkMode = !state.profile.darkMode;
+        applyTheme();
+      });
+      document.getElementById('auth-tab-signin').addEventListener('click', () => {
+        authMode = 'signin';
+        document.getElementById('auth-error').classList.add('hidden');
+        updateAuthView();
+      });
+      document.getElementById('auth-tab-register').addEventListener('click', () => {
+        authMode = 'register';
+        document.getElementById('auth-error').classList.add('hidden');
+        updateAuthView();
+      });
+      document.getElementById('auth-roll').addEventListener('input', () => {
+        const info = getGroupInfo(document.getElementById('auth-roll').value);
+        document.getElementById('auth-group-badge').textContent = `Group ${info.group} · ${info.subGroup}`;
+      });
+      document.getElementById('saved-profiles-list').addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-pick-roll]');
+        if (!btn) return;
+        const roll = btn.dataset.pickRoll;
+        document.getElementById('auth-roll').value = roll;
+        const info = getGroupInfo(roll);
+        document.getElementById('auth-group-badge').textContent = `Group ${info.group} · ${info.subGroup}`;
+        document.getElementById('auth-error').classList.add('hidden');
+        const acc = accountsIndex[String(roll)];
+        if (acc && !acc.pin) {
+          document.getElementById('auth-form').requestSubmit();
+        } else {
+          document.getElementById('auth-pin').focus();
+        }
+      });
+      document.getElementById('auth-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const errEl = document.getElementById('auth-error');
+        errEl.classList.add('hidden');
+        const roll = Math.max(1, Math.min(100, parseInt(document.getElementById('auth-roll').value, 10) || 1));
+        const pin = document.getElementById('auth-pin').value.trim();
+        const name = document.getElementById('auth-name').value.trim();
+        const key = String(roll);
+
+        if (pin && !/^\d{4}$/.test(pin)) {
+          errEl.textContent = 'Passcode must be exactly 4 digits (or leave it blank).';
+          errEl.classList.remove('hidden');
+          return;
+        }
+
+        if (authMode === 'register') {
+          if (accountsIndex[key]) {
+            errEl.textContent = `Roll ${roll} already has a saved profile on this device. Switch to Sign In instead.`;
+            errEl.classList.remove('hidden');
+            return;
+          }
+          const fresh = createDefaultState();
+          fresh.profile.rollNo = roll;
+          fresh.profile.name = name;
+          fresh.profile.darkMode = state.profile.darkMode;
+          accountsIndex[key] = { name, rollNo: roll, pin, state: fresh };
+          persistAccountsIndex();
+          currentSessionRoll = key;
+          try { localStorage.setItem(SESSION_KEY, key); } catch (err) {}
+          state = fresh;
+          document.getElementById('auth-pin').value = '';
+          updateAuthView();
+          renderAll();
+          showToast(`Welcome${name ? ', ' + name.split(' ')[0] : ''}! Roll ${roll} ready.`);
+        } else {
+          const existing = accountsIndex[key];
+          if (existing) {
+            if (existing.pin && existing.pin !== pin) {
+              errEl.textContent = 'Incorrect 4-digit passcode for Roll ' + roll + '.';
+              errEl.classList.remove('hidden');
+              return;
+            }
+            currentSessionRoll = key;
+            try { localStorage.setItem(SESSION_KEY, key); } catch (err) {}
+            state = {
+              ...createDefaultState(),
+              ...(existing.state || {}),
+              profile: { ...createDefaultState().profile, ...((existing.state && existing.state.profile) || {}), rollNo: roll }
+            };
+          } else {
+            // Instant first-time sign-in with Roll Number
+            const fresh = createDefaultState();
+            fresh.profile.rollNo = roll;
+            fresh.profile.darkMode = state.profile.darkMode;
+            accountsIndex[key] = { name: '', rollNo: roll, pin, state: fresh };
+            persistAccountsIndex();
+            currentSessionRoll = key;
+            try { localStorage.setItem(SESSION_KEY, key); } catch (err) {}
+            state = fresh;
+          }
+          applyTheme();
+          document.getElementById('auth-pin').value = '';
+          updateAuthView();
+          renderAll();
+          showToast(`Signed in as Roll ${String(roll).padStart(2, '0')}`);
+        }
+      });
+
+      document.getElementById('signout-btn').addEventListener('click', () => {
+        saveState();
+        currentSessionRoll = null;
+        try { localStorage.removeItem(SESSION_KEY); } catch (e) {}
+        authMode = 'signin';
+        document.getElementById('auth-pin').value = '';
+        document.getElementById('auth-error').classList.add('hidden');
+        updateAuthView();
+        showToast('Signed out');
+      });
+
+      // Theme toggle
+      document.getElementById('theme-toggle-btn').addEventListener('click', () => {
+        state.profile.darkMode = !state.profile.darkMode;
+        applyTheme();
+        saveState();
+        renderSubjectsView();
+      });
+
+      // Modals open/close
+      document.getElementById('open-profile-btn').addEventListener('click', openSettingsModal);
+      document.getElementById('open-settings-btn').addEventListener('click', openSettingsModal);
+      document.getElementById('open-baseline-btn').addEventListener('click', openBaselineModal);
+      document.getElementById('open-baseline-btn-2').addEventListener('click', openBaselineModal);
+      document.getElementById('open-backfill-btn').addEventListener('click', openBackfillModal);
+      document.getElementById('open-backfill-btn-2').addEventListener('click', openBackfillModal);
+      document.getElementById('open-leave-planner-btn').addEventListener('click', openLeaveSimulator);
+
+      document.querySelectorAll('[data-backfill-status]').forEach(btn => {
+        btn.addEventListener('click', () => applyBackfillRange(btn.dataset.backfillStatus));
+      });
+
+      document.getElementById('backfill-days-list').addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-jump-past-day]');
+        if (!btn) return;
+        state.selectedDate = btn.dataset.jumpPastDay;
+        state.activeTab = 'today';
+        saveState();
+        closeModal('backfill-modal');
+        renderAll();
+        showToast('Opened ' + formatDisplayDate(state.selectedDate) + ' for editing');
+      });
+
+      document.querySelectorAll('[data-close-modal]').forEach(btn => {
+        btn.addEventListener('click', () => closeModal(btn.dataset.closeModal));
+      });
+
+      // Date navigation
+      document.getElementById('prev-day-btn').addEventListener('click', () => {
+        state.selectedDate = shiftDate(state.selectedDate, -1);
+        saveState();
+        renderTodayView();
+        if (window.lucide) window.lucide.createIcons();
+      });
+      document.getElementById('next-day-btn').addEventListener('click', () => {
+        state.selectedDate = shiftDate(state.selectedDate, 1);
+        saveState();
+        renderTodayView();
+        if (window.lucide) window.lucide.createIcons();
+      });
+      document.getElementById('jump-today-btn').addEventListener('click', () => {
+        state.selectedDate = getTodayISO();
+        saveState();
+        renderTodayView();
+        if (window.lucide) window.lucide.createIcons();
+      });
+      document.getElementById('date-picker').addEventListener('change', (e) => {
+        if (e.target.value) {
+          state.selectedDate = e.target.value;
+          saveState();
+          renderTodayView();
+          if (window.lucide) window.lucide.createIcons();
+        }
+      });
+
+      // Bulk day marking
+      document.getElementById('mark-all-present-btn').addEventListener('click', () => bulkMarkDay('present'));
+      document.getElementById('mark-all-holiday-btn').addEventListener('click', () => bulkMarkDay('cancelled'));
+      document.getElementById('clear-day-btn').addEventListener('click', () => {
+        delete state.logs[state.selectedDate];
+        saveState();
+        renderAll();
+        showToast('Cleared attendance for ' + formatDisplayDate(state.selectedDate));
+      });
+
+      // Delegated clicks inside Today slots
+      document.getElementById('today-slots-container').addEventListener('click', (e) => {
+        const markBtn = e.target.closest('[data-mark-slot]');
+        if (markBtn) {
+          const slotId = markBtn.dataset.markSlot;
+          const subj = markBtn.dataset.markSubj;
+          const status = markBtn.dataset.markStatus;
+          if (!state.logs[state.selectedDate]) state.logs[state.selectedDate] = {};
+          const existing = state.logs[state.selectedDate][slotId];
+          if (existing && existing.status === status) {
+            delete state.logs[state.selectedDate][slotId];
+          } else {
+            state.logs[state.selectedDate][slotId] = { status, subject: subj };
+          }
+          saveState();
+          renderAll();
+          return;
+        }
+        const swapBtn = e.target.closest('[data-swap-slot]');
+        if (swapBtn) {
+          const slotId = swapBtn.dataset.swapSlot;
+          const subA = swapBtn.dataset.subA;
+          const subB = swapBtn.dataset.subB;
+          if (!state.logs[state.selectedDate]) state.logs[state.selectedDate] = {};
+          const existing = state.logs[state.selectedDate][slotId] || { status: '', subject: subA };
+          const nextSubj = existing.subject === subA ? subB : subA;
+          state.logs[state.selectedDate][slotId] = { ...existing, subject: nextSubj };
+          saveState();
+          renderAll();
+        }
+      });
+
+      // Subjects filter & quick adjust
+      document.querySelectorAll('.subj-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.subjectFilter = btn.dataset.subjFilter;
+          saveState();
+          renderSubjectsView();
+        });
+      });
+
+      document.getElementById('subjects-grid').addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-quick-adj]');
+        if (!btn) return;
+        const code = btn.dataset.quickAdj;
+        const mode = btn.dataset.adjMode;
+        const type = btn.dataset.adjType;
+        if (!state.baseline[code]) state.baseline[code] = { theoryPresent: 0, theoryTotal: 0, clinicalPresent: 0, clinicalTotal: 0 };
+        if (mode === 'clinical') {
+          state.baseline[code].clinicalTotal += 1;
+          if (type === 'present') state.baseline[code].clinicalPresent += 1;
+        } else {
+          state.baseline[code].theoryTotal += 1;
+          if (type === 'present') state.baseline[code].theoryPresent += 1;
+        }
+        saveState();
+        renderAll();
+        showToast(`Added +1 ${type === 'present' ? 'Present' : 'Absent'} to ${code}`);
+      });
+
+      // Roster preview selector
+      document.getElementById('roster-subgroup-select').addEventListener('change', (e) => {
+        state.rosterPreviewSub = e.target.value;
+        renderTimetableView();
+      });
+
+      // AETCOM & Pandemic checkboxes
+      document.getElementById('aetcom-list').addEventListener('change', (e) => {
+        const id = e.target.dataset.aetcomId;
+        if (id) {
+          state.aetcomDone[id] = e.target.checked;
+          saveState();
+          renderExamsView();
+        }
+      });
+      document.getElementById('pandemic-list').addEventListener('change', (e) => {
+        const id = e.target.dataset.pandemicId;
+        if (id) {
+          state.pandemicDone[id] = e.target.checked;
+          saveState();
+          renderExamsView();
+        }
+      });
+
+      // Settings save
+      document.getElementById('input-roll-no').addEventListener('input', updateSettingsGroupPreview);
+      document.getElementById('save-settings-btn').addEventListener('click', () => {
+        state.profile.name = document.getElementById('input-student-name').value.trim();
+        state.profile.rollNo = Math.max(1, Math.min(100, parseInt(document.getElementById('input-roll-no').value, 10) || 1));
+        state.profile.theoryTarget = Math.max(50, Math.min(100, parseInt(document.getElementById('input-theory-target').value, 10) || 75));
+        state.profile.clinicalTarget = Math.max(50, Math.min(100, parseInt(document.getElementById('input-clinical-target').value, 10) || 80));
+        state.rosterPreviewSub = null;
+        saveState();
+        closeModal('settings-modal');
+        renderAll();
+        showToast('Profile & targets updated');
+      });
+
+      // Baseline save
+      document.getElementById('save-baseline-btn').addEventListener('click', () => {
+        const inputs = document.querySelectorAll('#baseline-rows input[data-base-code]');
+        const nextBase = {};
+        inputs.forEach(inp => {
+          const c = inp.dataset.baseCode;
+          const f = inp.dataset.baseField;
+          if (!nextBase[c]) nextBase[c] = { theoryPresent: 0, theoryTotal: 0, clinicalPresent: 0, clinicalTotal: 0 };
+          nextBase[c][f] = Math.max(0, parseInt(inp.value, 10) || 0);
+        });
+        for (const c of Object.keys(nextBase)) {
+          if (nextBase[c].theoryPresent > nextBase[c].theoryTotal) nextBase[c].theoryTotal = nextBase[c].theoryPresent;
+          if (nextBase[c].clinicalPresent > nextBase[c].clinicalTotal) nextBase[c].clinicalTotal = nextBase[c].clinicalPresent;
+        }
+        state.baseline = nextBase;
+        saveState();
+        closeModal('baseline-modal');
+        renderAll();
+        showToast('Prior attendance counts saved');
+      });
+
+      // Leave simulator run
+      document.getElementById('run-leave-sim-btn').addEventListener('click', runLeaveSimulation);
+
+      // Export JSON
+      document.getElementById('export-json-btn').addEventListener('click', () => {
+        const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `attendmate-nsmch-roll-${state.profile.rollNo}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('JSON backup downloaded');
+      });
+
+      // Export CSV
+      document.getElementById('export-csv-btn').addEventListener('click', () => {
+        const stats = computeSubjectStats();
+        const rows = [['Code', 'Subject', 'Theory Present', 'Theory Total', 'Theory %', 'Clinical Present', 'Clinical Total', 'Clinical %']];
+        SUBJECTS.forEach(s => {
+          const st = stats[s.code];
+          const tp = st.theoryTotal > 0 ? ((st.theoryPresent / st.theoryTotal) * 100).toFixed(1) + '%' : '0%';
+          const cp = st.clinicalTotal > 0 ? ((st.clinicalPresent / st.clinicalTotal) * 100).toFixed(1) + '%' : '0%';
+          rows.push([s.code, `"${s.name}"`, st.theoryPresent, st.theoryTotal, tp, st.clinicalPresent, st.clinicalTotal, cp]);
+        });
+        const csv = rows.map(r => r.join(',')).join('\n');
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `attendmate-nsmch-summary-roll-${state.profile.rollNo}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('CSV summary downloaded');
+      });
+
+      // Import JSON
+      document.getElementById('import-json-input').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const parsed = JSON.parse(reader.result);
+            if (!parsed || typeof parsed !== 'object' || !parsed.profile) {
+              showToast('Invalid backup file format');
+              return;
+            }
+            state = { ...createDefaultState(), ...parsed };
+            applyTheme();
+            saveState();
+            closeModal('settings-modal');
+            renderAll();
+            showToast('Backup restored successfully');
+          } catch (err) {
+            showToast('Could not read JSON file');
+          }
+        };
+        reader.readAsText(file);
+        e.target.value = '';
+      });
+
+      // Reset flow
+      document.getElementById('reset-all-btn').addEventListener('click', () => {
+        closeModal('settings-modal');
+        openModal('confirm-reset-modal');
+      });
+      document.getElementById('confirm-reset-yes-btn').addEventListener('click', () => {
+        const keepProfile = { ...state.profile };
+        state = createDefaultState();
+        state.profile = keepProfile;
+        saveState();
+        closeModal('confirm-reset-modal');
+        renderAll();
+        showToast('All attendance records reset');
+      });
+    }
+
+    function bulkMarkDay(status) {
+      const iso = state.selectedDate;
+      const dow = getDayOfWeek(iso);
+      if (dow === 0) return;
+      const info = getGroupInfo(state.profile.rollNo);
+      const posting = getClinicalPostingForDate(iso, info.subGroup);
+      const slots = MASTER_TIMETABLE[dow] || [];
+      if (!state.logs[iso]) state.logs[iso] = {};
+      slots.forEach(slot => {
+        const existing = state.logs[iso][slot.id];
+        const subj = (existing && existing.subject) || (slot.type === 'clinical' ? (posting ? posting.code : 'IM') : slot.subject);
+        state.logs[iso][slot.id] = { status, subject: subj };
+      });
+      saveState();
+      renderAll();
+      showToast(status === 'present' ? 'Marked all classes Present' : 'Marked day as Holiday');
+    }
+
+    // Boot
+    loadState();
+    bindEvents();
+    updateAuthView();
+    initGoogleSignIn();
+    window.addEventListener('load', initGoogleSignIn);
+    if (currentSessionRoll) {
+      renderAll();
+    }
+  </script>
+</body>
+</html>
